@@ -6,8 +6,8 @@
 * vars.heapsterGrafana.image.version
 */
 influxdb-grafana-deploy-yaml(parent, vars) ::= <<
-apiVersion: v1
-kind: ReplicationController
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
   name: monitoring-influxdb-grafana-<vars.influxGrafana.image.version>
   namespace: kube-system
