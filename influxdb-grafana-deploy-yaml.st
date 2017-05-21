@@ -17,8 +17,9 @@ metadata:
 spec:
   replicas: 1
   selector:
-    k8s-app: influxGrafana
-    version: <vars.influxGrafana.image.version>
+    matchLabels:
+      k8s-app: influxGrafana
+      version: <vars.influxGrafana.image.version>
   template:
     metadata:
       labels:
