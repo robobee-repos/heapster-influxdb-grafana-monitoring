@@ -1,5 +1,5 @@
 
-import "tolerations.st"
+import "tolerations"
 
 /*
 * vars.heapster.image.version
