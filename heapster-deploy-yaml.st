@@ -111,15 +111,15 @@ spec:
             - --poll-period=300000
             - --estimator=exponential
       # <vars.heapster.tolerations>
-<tolerations(parent, vars, vars.heapster.tolerations)>
+<tolerations(parent, vars)>
 
 >>
 
-tolerations(parent, vars, tolerations) ::= <<
-      # <tolerations>
-<if(tolerations)>
+tolerations(parent, vars) ::= <<
+      # <vars.heapster.tolerations>
+<if(vars.heapster.tolerations)>
       tolerations:
-<tolerations:tolerations()>
+<vars.heapster.tolerations:tolerations()>
 <endif>
 >>
 
