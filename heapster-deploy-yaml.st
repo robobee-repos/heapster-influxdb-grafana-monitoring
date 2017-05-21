@@ -116,6 +116,7 @@ spec:
 >>
 
 tolerations(parent, vars, tolerations) ::= <<
+      # <tolerations>
 <if(tolerations)>
       tolerations:
 <tolerations:tolerations()>
