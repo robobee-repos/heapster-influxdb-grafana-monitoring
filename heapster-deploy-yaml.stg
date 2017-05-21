@@ -32,6 +32,7 @@ spec:
         k8s-app: heapster
         version: <vars.heapster.image.version>
     spec:
+<tolerations(parent, vars, vars.heapster.tolerations)>
       containers:
         - image: <vars.heapster.image.name>:<vars.heapster.image.version>
           name: heapster
@@ -110,7 +111,6 @@ spec:
             - --container=eventer
             - --poll-period=300000
             - --estimator=exponential
-<tolerations(parent, vars, vars.heapster.tolerations)>
 
 >>
 
