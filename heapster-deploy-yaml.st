@@ -3,7 +3,7 @@
 * vars.heapster.image.name
 * vars.resizer.image.name
 * vars.resizer.image.version
-* vars.nannyMemory
+* vars.nanny.memory
 * vars.metrics.baseCpu
 * vars.metrics.cpuPerNode
 * vars.metrics.baseMemory
@@ -57,10 +57,10 @@ spec:
           resources:
             limits:
               cpu: 50m
-              memory: <vars.nannyMemory>
+              memory: <vars.nanny.memory>
             requests:
               cpu: 50m
-              memory: <vars.nannyMemory>
+              memory: <vars.nanny.memory>
           env:
             - name: MY_POD_NAME
               valueFrom:
@@ -86,10 +86,10 @@ spec:
           resources:
             limits:
               cpu: 50m
-              memory: <vars.nannyMemory>
+              memory: <vars.nanny.memory>
             requests:
               cpu: 50m
-              memory: <vars.nannyMemory>
+              memory: <vars.nanny.memory>
           env:
             - name: MY_POD_NAME
               valueFrom:
