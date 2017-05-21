@@ -1,3 +1,6 @@
+
+import "tolerations.st"
+
 /*
 * vars.heapster.image.version
 * vars.heapster.image.name
@@ -110,5 +113,6 @@ spec:
             - --container=eventer
             - --poll-period=300000
             - --estimator=exponential
+<tolerations(parent, vars, vars.heapster.tolerations)>
 
 >>
