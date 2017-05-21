@@ -110,6 +110,7 @@ spec:
             - --container=eventer
             - --poll-period=300000
             - --estimator=exponential
+      # <vars.heapster.tolerations>
 <tolerations(parent, vars, vars.heapster.tolerations)>
 
 >>
