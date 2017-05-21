@@ -1,4 +1,4 @@
-include "tolerations.stg"
+import "tolerations.stg"
 
 /*
 * vars.heapster.image.version
