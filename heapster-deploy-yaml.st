@@ -57,10 +57,10 @@ spec:
           resources:
             limits:
               cpu: 50m
-              memory: <vars.nanny.memory>
+              memory: <vars.nanny.memory_ki>Ki
             requests:
               cpu: 50m
-              memory: <vars.nanny.memory>
+              memory: <vars.nanny.memory_ki>Ki
           env:
             - name: MY_POD_NAME
               valueFrom:
@@ -86,10 +86,10 @@ spec:
           resources:
             limits:
               cpu: 50m
-              memory: <vars.nanny.memory>
+              memory: <vars.nanny.memory_ki>Ki
             requests:
               cpu: 50m
-              memory: <vars.nanny.memory>
+              memory: <vars.nanny.memory_ki>Ki
           env:
             - name: MY_POD_NAME
               valueFrom:
