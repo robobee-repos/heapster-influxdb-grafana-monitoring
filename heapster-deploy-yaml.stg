@@ -114,5 +114,8 @@ spec:
             - --container=eventer
             - --poll-period=300000
             - --estimator=exponential
+      volumes:
+      - name: heapster-persistent-storage
+        emptyDir: {}
 <tolerations(parent, vars, vars.heapster.tolerations)>
 >>
