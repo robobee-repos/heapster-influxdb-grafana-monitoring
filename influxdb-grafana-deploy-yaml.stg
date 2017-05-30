@@ -92,8 +92,9 @@ spec:
                 values:
                 - required
           preferredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
+          - weight: 1
+            preference:
+              matchExpressions:
               - key: robobeerun.com/cluster-monitoring-influxdb-grafana
                 operator: In
                 values:

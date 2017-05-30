@@ -124,8 +124,9 @@ spec:
                 values:
                 - required
           preferredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
+          - weight: 1
+            preference:
+              matchExpressions:
               - key: robobeerun.com/cluster-monitoring-heapster
                 operator: In
                 values:
