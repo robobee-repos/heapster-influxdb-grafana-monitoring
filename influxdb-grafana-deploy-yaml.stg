@@ -80,7 +80,6 @@ spec:
         emptyDir: {}
       - name: grafana-persistent-storage
         emptyDir: {}
-      dnsPolicy: Default
 <tolerations(parent, vars, vars.heapster.tolerations)>
 
 >>
