@@ -82,6 +82,22 @@ spec:
         emptyDir: {}
       - name: grafana-persistent-storage
         emptyDir: {}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: robobeerun.com/cluster-monitoring-influxdb-grafana
+                operator: In
+                values:
+                - required
+          preferredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: robobeerun.com/cluster-monitoring-influxdb-grafana
+                operator: In
+                values:
+                - preferred
 <tolerations(parent, vars, vars.heapster.tolerations)>
 
 >>
