@@ -16,6 +16,7 @@ metadata:
   labels:
     k8s-app: influxGrafana
     version: <vars.influxGrafana.image.version>
+    robobeerun.com/group: cluster-monitoring
 spec:
   replicas: 1
   selector:
@@ -27,6 +28,7 @@ spec:
       labels:
         k8s-app: influxGrafana
         version: <vars.influxGrafana.image.version>
+        robobeerun.com/group: cluster-monitoring
     spec:
       containers:
         - image: <vars.heapsterInfluxdb.image.name>:<vars.heapsterInfluxdb.image.version>
