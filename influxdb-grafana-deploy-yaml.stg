@@ -18,6 +18,50 @@
 import "tolerations.stg"
 
 influxdb-grafana-deploy-yaml(parent, vars) ::= <<
+
+<if(vars.heapsterInfluxdb.persistent)>
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: influxdb-persistent-storage
+  namespace: kube-system
+  annotations:
+    volume.beta.kubernetes.io/storage-class: <vars.heapsterInfluxdb.persistent.storage.class>
+  labels:
+    k8s-app: influxGrafana
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: <vars.heapsterInfluxdb.persistent.storage.size_gb>
+<endif>
+>>
+
+<if(vars.heapsterGrafana.persistent)>
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-persistent-storage
+  namespace: kube-system
+  annotations:
+    volume.beta.kubernetes.io/storage-class: <vars.heapsterGrafana.persistent.storage.class>
+  labels:
+    k8s-app: influxGrafana
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: <vars.heapsterGrafana.persistent.storage.size_gb>
+<endif>
+
+---
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -120,44 +164,5 @@ spec:
                 values:
                 - preferred
 <tolerations(parent, vars, vars.heapster.tolerations)>
-
-<if(vars.heapsterInfluxdb.persistent)>
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: influxdb-persistent-storage
-  namespace: kube-system
-  annotations:
-    volume.beta.kubernetes.io/storage-class: <vars.heapsterInfluxdb.persistent.storage.class>
-  labels:
-    k8s-app: influxGrafana
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: <vars.heapsterInfluxdb.persistent.storage.size_gb>
-<endif>
->>
-
-<if(vars.heapsterGrafana.persistent)>
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: grafana-persistent-storage
-  namespace: kube-system
-  annotations:
-    volume.beta.kubernetes.io/storage-class: <vars.heapsterGrafana.persistent.storage.class>
-  labels:
-    k8s-app: influxGrafana
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: <vars.heapsterGrafana.persistent.storage.size_gb>
-<endif>
 
 >>
