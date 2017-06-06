@@ -126,15 +126,18 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
- name: influxdb-persistent-storage
- annotations:
-   volume.beta.kubernetes.io/storage-class: <vars.heapsterInfluxdb.persistent.storage.class>
+  name: influxdb-persistent-storage
+  namespace: kube-system
+  annotations:
+    volume.beta.kubernetes.io/storage-class: <vars.heapsterInfluxdb.persistent.storage.class>
+  labels:
+    k8s-app: influxGrafana
 spec:
- accessModes:
-  - ReadWriteOnce
- resources:
-   requests:
-     storage: <vars.heapsterInfluxdb.persistent.storage.size_gb>
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: <vars.heapsterInfluxdb.persistent.storage.size_gb>
 <endif>
 >>
 
@@ -143,15 +146,18 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
- name: grafana-persistent-storage
- annotations:
-   volume.beta.kubernetes.io/storage-class: <vars.heapsterGrafana.persistent.storage.class>
+  name: grafana-persistent-storage
+  namespace: kube-system
+  annotations:
+    volume.beta.kubernetes.io/storage-class: <vars.heapsterGrafana.persistent.storage.class>
+  labels:
+    k8s-app: influxGrafana
 spec:
- accessModes:
-  - ReadWriteOnce
- resources:
-   requests:
-     storage: <vars.heapsterGrafana.persistent.storage.size_gb>
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: <vars.heapsterGrafana.persistent.storage.size_gb>
 <endif>
 
 >>
