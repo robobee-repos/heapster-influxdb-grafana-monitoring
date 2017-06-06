@@ -1,12 +1,22 @@
+/*
+ * Mandatory:
+ * 
+ * vars.influxGrafana.image.version
+ * vars.heapsterInfluxdb.image.name
+ * vars.heapsterInfluxdb.image.version
+ * vars.heapsterGrafana.image.name
+ * vars.heapsterGrafana.image.version
+ * 
+ * Optional:
+ * 
+ * vars.heapsterInfluxdb.persistent.storage.class
+ * vars.heapsterInfluxdb.persistent.storage.size_gb
+ * vars.heapsterGrafana.persistent.storage.class
+ * vars.heapsterGrafana.persistent.storage.size_gb
+ */
+
 import "tolerations.stg"
 
-/*
-* vars.influxGrafana.image.version
-* vars.heapsterInfluxdb.image.name
-* vars.heapsterInfluxdb.image.version
-* vars.heapsterGrafana.image.name
-* vars.heapsterGrafana.image.version
-*/
 influxdb-grafana-deploy-yaml(parent, vars) ::= <<
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -79,9 +89,19 @@ spec:
             mountPath: /var
       volumes:
       - name: influxdb-persistent-storage
+<if(vars.heapsterInfluxdb.persistent)>
+        persistentVolumeClaim:
+          claimName: influxdb-persistent-storage
+<else>
         emptyDir: {}
+<endif>
       - name: grafana-persistent-storage
+<if(vars.heapsterGrafana.persistent)>
+        persistentVolumeClaim:
+          claimName: grafana-persistent-storage
+<else>
         emptyDir: {}
+<endif>
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -100,5 +120,38 @@ spec:
                 values:
                 - preferred
 <tolerations(parent, vars, vars.heapster.tolerations)>
+
+<if(vars.heapsterInfluxdb.persistent)>
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: influxdb-persistent-storage
+ annotations:
+   volume.beta.kubernetes.io/storage-class: <vars.heapsterInfluxdb.persistent.storage.class>
+spec:
+ accessModes:
+  - ReadWriteOnce
+ resources:
+   requests:
+     storage: <vars.heapsterInfluxdb.persistent.storage.size_gb>
+<endif>
+>>
+
+<if(vars.heapsterGrafana.persistent)>
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: grafana-persistent-storage
+ annotations:
+   volume.beta.kubernetes.io/storage-class: <vars.heapsterGrafana.persistent.storage.class>
+spec:
+ accessModes:
+  - ReadWriteOnce
+ resources:
+   requests:
+     storage: <vars.heapsterGrafana.persistent.storage.size_gb>
+<endif>
 
 >>
