@@ -38,7 +38,6 @@ spec:
     requests:
       storage: <vars.heapsterInfluxdb.persistent.storage.size_gb>
 <endif>
->>
 
 <if(vars.heapsterGrafana.persistent)>
 ---
