@@ -1,13 +1,66 @@
+/*
+ * Mandatory:
+ * 
+ * vars.influxGrafana.image.version
+ * vars.heapsterInfluxdb.image.name
+ * vars.heapsterInfluxdb.image.version
+ * vars.heapsterGrafana.image.name
+ * vars.heapsterGrafana.image.version
+ * 
+ * Optional:
+ * 
+ * vars.heapsterInfluxdb.persistent.storage.class
+ * vars.heapsterInfluxdb.persistent.storage.size_gb
+ * vars.heapsterGrafana.persistent.storage.class
+ * vars.heapsterGrafana.persistent.storage.size_gb
+ */
+
 import "tolerations.stg"
 
-/*
-* vars.influxGrafana.image.version
-* vars.heapsterInfluxdb.image.name
-* vars.heapsterInfluxdb.image.version
-* vars.heapsterGrafana.image.name
-* vars.heapsterGrafana.image.version
-*/
 influxdb-grafana-deploy-yaml(parent, vars) ::= <<
+
+<if(vars.heapsterInfluxdb.persistent)>
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: influxdb-persistent-storage
+  namespace: kube-system
+  annotations:
+    volume.beta.kubernetes.io/storage-class: <vars.heapsterInfluxdb.persistent.storage.class>
+  labels:
+    k8s-app: influxGrafana
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: <vars.heapsterInfluxdb.persistent.storage.size_gb>
+<endif>
+
+<if(vars.heapsterGrafana.persistent)>
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-persistent-storage
+  namespace: kube-system
+  annotations:
+    volume.beta.kubernetes.io/storage-class: <vars.heapsterGrafana.persistent.storage.class>
+  labels:
+    k8s-app: influxGrafana
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: <vars.heapsterGrafana.persistent.storage.size_gb>
+<endif>
+
+---
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -16,6 +69,7 @@ metadata:
   labels:
     k8s-app: influxGrafana
     version: <vars.influxGrafana.image.version>
+    robobeerun.com/group: cluster-monitoring
 spec:
   replicas: 1
   selector:
@@ -27,6 +81,7 @@ spec:
       labels:
         k8s-app: influxGrafana
         version: <vars.influxGrafana.image.version>
+        robobeerun.com/group: cluster-monitoring
     spec:
       containers:
         - image: <vars.heapsterInfluxdb.image.name>:<vars.heapsterInfluxdb.image.version>
@@ -77,10 +132,36 @@ spec:
             mountPath: /var
       volumes:
       - name: influxdb-persistent-storage
+<if(vars.heapsterInfluxdb.persistent)>
+        persistentVolumeClaim:
+          claimName: influxdb-persistent-storage
+<else>
         emptyDir: {}
+<endif>
       - name: grafana-persistent-storage
+<if(vars.heapsterGrafana.persistent)>
+        persistentVolumeClaim:
+          claimName: grafana-persistent-storage
+<else>
         emptyDir: {}
-      dnsPolicy: Default
-<tolerations(parent, vars, vars.influxGrafana.tolerations)>
+<endif>
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: robobeerun.com/cluster-monitoring-influxdb-grafana
+                operator: In
+                values:
+                - required
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: robobeerun.com/cluster-monitoring-influxdb-grafana
+                operator: In
+                values:
+                - preferred
+<tolerations(parent, vars, vars.heapster.tolerations)>
 
 >>

@@ -4,8 +4,8 @@ tolerations(parent, vars, tolerations) ::= <<
 >>
 
 toleration(toleration) ::= <<
-        - effect: <toleration.effect>
-          key: <toleration.key>
-          operator: Equal<if(toleration.value)>
-          value: <toleration.value><endif>
+      - effect: <toleration.effect>
+        key: <toleration.key>
+        operator: Equal<if(toleration.value)>
+        value: <toleration.value><endif>
 >>
