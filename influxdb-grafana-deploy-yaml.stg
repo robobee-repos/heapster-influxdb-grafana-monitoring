@@ -9,10 +9,14 @@
  * 
  * Optional:
  * 
+ * vars.influxGrafana.affinityRequired
+ * vars.influxGrafana.tolerations[].effect
+ * vars.influxGrafana.tolerations[].key
+ * vars.influxGrafana.tolerations[].value
  * vars.heapsterInfluxdb.persistent.storage.class
- * vars.heapsterInfluxdb.persistent.storage.size_gb
+ * vars.heapsterInfluxdb.persistent.storage.size
  * vars.heapsterGrafana.persistent.storage.class
- * vars.heapsterGrafana.persistent.storage.size_gb
+ * vars.heapsterGrafana.persistent.storage.size
  */
 
 import "tolerations.stg"
@@ -36,7 +40,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: <vars.heapsterInfluxdb.persistent.storage.size_gb>
+      storage: <vars.heapsterInfluxdb.persistent.storage.size>
 <endif>
 
 <if(vars.heapsterGrafana.persistent)>
@@ -56,7 +60,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: <vars.heapsterGrafana.persistent.storage.size_gb>
+      storage: <vars.heapsterGrafana.persistent.storage.size>
 <endif>
 
 ---
@@ -145,6 +149,7 @@ spec:
 <else>
         emptyDir: {}
 <endif>
+<if(vars.heapster.affinityRequired)>
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -154,6 +159,7 @@ spec:
                 operator: In
                 values:
                 - required
+<else>
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             preference:
@@ -162,6 +168,7 @@ spec:
                 operator: In
                 values:
                 - preferred
-<tolerations(parent, vars, vars.heapster.tolerations)>
+<endif>
+<tolerations(parent, vars, vars.influxGrafana.tolerations)>
 
 >>
