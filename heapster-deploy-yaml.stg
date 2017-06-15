@@ -1,18 +1,28 @@
+/*
+ * Mandatory:
+ *
+ * vars.heapster.image.version
+ * vars.heapster.image.name
+ * vars.resizer.image.name
+ * vars.resizer.image.version
+ * vars.nanny.memory
+ * vars.metrics.baseCpu
+ * vars.metrics.extraCpu
+ * vars.metrics.baseMemory
+ * vars.metrics.extraMemory
+ * vars.eventer.baseMemory
+ * vars.eventer.extraMemory
+ *
+ * Optional:
+ *
+ * vars.heapster.affinityRequired
+ * vars.heapster.tolerations[].effect
+ * vars.heapster.tolerations[].key
+ * vars.heapster.tolerations[].value
+ */
+
 import "tolerations.stg"
 
-/*
-* vars.heapster.image.version
-* vars.heapster.image.name
-* vars.resizer.image.name
-* vars.resizer.image.version
-* vars.nanny.memory
-* vars.metrics.baseCpu
-* vars.metrics.extraCpu
-* vars.metrics.baseMemory
-* vars.metrics.extraMemory
-* vars.eventer.baseMemory
-* vars.eventer.extraMemory
-*/
 heapster-deploy-yaml(parent, vars) ::= <<
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -115,6 +125,7 @@ spec:
             - --poll-period=300000
             - --estimator=exponential
       affinity:
+<if(vars.heapster.affinityRequired)>
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -123,6 +134,7 @@ spec:
                 operator: In
                 values:
                 - required
+<else>
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             preference:
@@ -131,5 +143,6 @@ spec:
                 operator: In
                 values:
                 - preferred
+<endif>
 <tolerations(parent, vars, vars.heapster.tolerations)>
 >>
