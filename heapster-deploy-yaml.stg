@@ -7,11 +7,11 @@ import "tolerations.stg"
 * vars.resizer.image.version
 * vars.nanny.memory
 * vars.metrics.baseCpu
-* vars.metrics.cpuPerNode
+* vars.metrics.extraCpu
 * vars.metrics.baseMemory
-* vars.metrics.memoryPerNode
+* vars.metrics.extraMemory
 * vars.eventer.baseMemory
-* vars.eventer.memoryPerNode
+* vars.eventer.extraMemory
 */
 heapster-deploy-yaml(parent, vars) ::= <<
 apiVersion: extensions/v1beta1
@@ -77,9 +77,9 @@ spec:
           command:
             - /pod_nanny
             - --cpu=<vars.metrics.baseCpu>
-            - --extra-cpu=<vars.metrics.cpuPerNode>
+            - --extra-cpu=<vars.metrics.extraCpu>
             - --memory=<vars.metrics.baseMemory>
-            - --extra-memory=<vars.metrics.memoryPerNode>
+            - --extra-memory=<vars.metrics.extraMemory>
             - --threshold=5
             - --deployment=heapster-<vars.heapster.image.version>
             - --container=heapster
@@ -105,10 +105,10 @@ spec:
                   fieldPath: metadata.namespace
           command:
             - /pod_nanny
-            - --cpu=100m
+            - --cpu=50m
             - --extra-cpu=0m
             - --memory=<vars.eventer.baseMemory>
-            - --extra-memory=<vars.eventer.memoryPerNode>
+            - --extra-memory=<vars.eventer.extraMemory>
             - --threshold=5
             - --deployment=heapster-<vars.heapster.image.version>
             - --container=eventer
