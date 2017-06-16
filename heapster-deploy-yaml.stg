@@ -102,11 +102,11 @@ spec:
           name: eventer-nanny
           resources:
             limits:
-              cpu: 50m
-              memory: <vars.nanny.memory>Ki
+              cpu: <vars.nanny.limits.cpu>
+              memory: <vars.nanny.limits.memory>
             requests:
-              cpu: 50m
-              memory: <vars.nanny.memory>Ki
+              cpu: <vars.nanny.requests.cpu>
+              memory: <vars.nanny.requests.memory>
           env:
             - name: MY_POD_NAME
               valueFrom:
