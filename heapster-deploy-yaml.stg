@@ -13,6 +13,8 @@
  * vars.metrics.extraCpu
  * vars.metrics.baseMemory
  * vars.metrics.extraMemory
+ * vars.eventer.baseCpu
+ * vars.eventer.extraCpu
  * vars.eventer.baseMemory
  * vars.eventer.extraMemory
  *
@@ -118,8 +120,8 @@ spec:
                   fieldPath: metadata.namespace
           command:
             - /pod_nanny
-            - --cpu=50m
-            - --extra-cpu=0m
+            - --cpu=<vars.eventer.baseCpu>
+            - --extra-cpu=<vars.eventer.extraCpu>
             - --memory=<vars.eventer.baseMemory>
             - --extra-memory=<vars.eventer.extraMemory>
             - --threshold=5
