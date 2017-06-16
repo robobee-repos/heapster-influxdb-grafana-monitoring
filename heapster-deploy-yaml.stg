@@ -31,7 +31,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: heapster-<vars.heapster.image.version>
-  namespace: kube-system
+  namespace: kube-monitoring
   labels:
     k8s-app: heapster
     version: <vars.heapster.image.version>

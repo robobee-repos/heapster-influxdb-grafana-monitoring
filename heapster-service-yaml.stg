@@ -3,7 +3,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: heapster
-  namespace: kube-system
+  namespace: kube-monitoring
   labels:
     kubernetes.io/name: "Heapster"
     robobeerun.com/group: cluster-monitoring

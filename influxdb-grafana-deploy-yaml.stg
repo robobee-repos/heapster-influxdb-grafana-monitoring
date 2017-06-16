@@ -30,7 +30,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: influxdb-persistent-storage
-  namespace: kube-system
+  namespace: kube-monitoring
   annotations:
     volume.beta.kubernetes.io/storage-class: <vars.heapsterInfluxdb.persistent.storage.class>
   labels:
@@ -51,7 +51,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: grafana-persistent-storage
-  namespace: kube-system
+  namespace: kube-monitoring
   annotations:
     volume.beta.kubernetes.io/storage-class: <vars.heapsterGrafana.persistent.storage.class>
   labels:
@@ -71,7 +71,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: monitoring-influxdb-grafana-<vars.influxGrafana.image.version>
-  namespace: kube-system
+  namespace: kube-monitoring
   labels:
     k8s-app: influxGrafana
     version: <vars.influxGrafana.image.version>
