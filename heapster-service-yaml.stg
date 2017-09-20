@@ -1,3 +1,7 @@
+/*
+ *
+ */
+
 heapster-service-yaml(parent, vars) ::= <<
 kind: Service
 apiVersion: v1
@@ -6,7 +10,7 @@ metadata:
   namespace: kube-system
   labels:
     kubernetes.io/name: "Heapster"
-    robobeerun.com/group: cluster-monitoring
+    robobeerun.com/group: cluster-monitoring-heapster
 spec:
   ports:
     - port: 80

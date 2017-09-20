@@ -1,3 +1,7 @@
+/*
+ *
+ */
+
 influxdb-service-yaml(parent, vars) ::= <<
 apiVersion: v1
 kind: Service
@@ -6,7 +10,7 @@ metadata:
   namespace: kube-system
   labels: 
     kubernetes.io/name: "InfluxDB"
-    robobeerun.com/group: cluster-monitoring
+    robobeerun.com/group: cluster-monitoring-heapster
 spec: 
   ports: 
     - name: http

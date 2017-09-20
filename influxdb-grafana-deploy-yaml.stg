@@ -2,19 +2,28 @@
  * Mandatory:
  * 
  * vars.influxGrafana.image.version
+ * vars.influxGrafana.limits.cpu
+ * vars.influxGrafana.limits.memory
+ * vars.influxGrafana.requests.cpu
+ * vars.influxGrafana.requests.memory
  * vars.heapsterInfluxdb.image.name
  * vars.heapsterInfluxdb.image.version
  * vars.heapsterGrafana.image.name
  * vars.heapsterGrafana.image.version
+ * vars.heapsterGrafana.limits.cpu
+ * vars.heapsterGrafana.limits.memory
+ * vars.heapsterGrafana.requests.cpu
+ * vars.heapsterGrafana.requests.memory
  * 
  * Optional:
  * 
  * vars.heapsterInfluxdb.persistent.storage.class
- * vars.heapsterInfluxdb.persistent.storage.size_gb
+ * vars.heapsterInfluxdb.persistent.storage.size
  * vars.heapsterGrafana.persistent.storage.class
- * vars.heapsterGrafana.persistent.storage.size_gb
+ * vars.heapsterGrafana.persistent.storage.size
  */
 
+import "affinities.stg"
 import "tolerations.stg"
 
 influxdb-grafana-deploy-yaml(parent, vars) ::= <<
@@ -31,12 +40,13 @@ metadata:
     volume.beta.kubernetes.io/storage-class: <vars.heapsterInfluxdb.persistent.storage.class>
   labels:
     k8s-app: influxGrafana
+    robobeerun.com/group: cluster-monitoring-heapster
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: <vars.heapsterInfluxdb.persistent.storage.size_gb>
+      storage: <vars.heapsterInfluxdb.persistent.storage.size>
 <endif>
 
 <if(vars.heapsterGrafana.persistent)>
@@ -51,12 +61,13 @@ metadata:
     volume.beta.kubernetes.io/storage-class: <vars.heapsterGrafana.persistent.storage.class>
   labels:
     k8s-app: influxGrafana
+    robobeerun.com/group: cluster-monitoring-heapster
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: <vars.heapsterGrafana.persistent.storage.size_gb>
+      storage: <vars.heapsterGrafana.persistent.storage.size>
 <endif>
 
 ---
@@ -69,7 +80,7 @@ metadata:
   labels:
     k8s-app: influxGrafana
     version: <vars.influxGrafana.image.version>
-    robobeerun.com/group: cluster-monitoring
+    robobeerun.com/group: cluster-monitoring-heapster
 spec:
   replicas: 1
   selector:
@@ -81,7 +92,7 @@ spec:
       labels:
         k8s-app: influxGrafana
         version: <vars.influxGrafana.image.version>
-        robobeerun.com/group: cluster-monitoring
+        robobeerun.com/group: cluster-monitoring-heapster
     spec:
       containers:
         - image: <vars.heapsterInfluxdb.image.name>:<vars.heapsterInfluxdb.image.version>
@@ -89,11 +100,11 @@ spec:
           resources:
             # keep request = limit to keep this container in guaranteed class
             limits:
-              cpu: 100m
-              memory: 500Mi
+              cpu: <vars.influxGrafana.limits.cpu>
+              memory: <vars.influxGrafana.limits.memory>
             requests:
-              cpu: 100m
-              memory: 500Mi
+              cpu: <vars.influxGrafana.requests.cpu>
+              memory: <vars.influxGrafana.requests.memory>
           ports:
             - containerPort: 8083
             - containerPort: 8086
@@ -106,11 +117,11 @@ spec:
           resources:
             # keep request = limit to keep this container in guaranteed class
             limits:
-              cpu: 100m
-              memory: 100Mi
+              cpu: <vars.heapsterGrafana.limits.cpu>
+              memory: <vars.heapsterGrafana.limits.memory>
             requests:
-              cpu: 100m
-              memory: 100Mi
+              cpu: <vars.heapsterGrafana.requests.cpu>
+              memory: <vars.heapsterGrafana.requests.memory>
           env:
             # This variable is required to setup templates in Grafana.
             - name: INFLUXDB_SERVICE_URL
@@ -145,23 +156,7 @@ spec:
 <else>
         emptyDir: {}
 <endif>
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: robobeerun.com/cluster-monitoring-influxdb-grafana
-                operator: In
-                values:
-                - required
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-              - key: robobeerun.com/cluster-monitoring-influxdb-grafana
-                operator: In
-                values:
-                - preferred
-<tolerations(parent, vars, vars.heapster.tolerations)>
+<affinitiesGroup(parent, vars)>
+<tolerationsGroup(parent, vars, vars.heapster.tolerations)>
 
 >>

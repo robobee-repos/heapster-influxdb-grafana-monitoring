@@ -1,18 +1,25 @@
+/*
+ * Mandatory:
+ * 
+ * vars.heapster.image.version
+ * vars.heapster.image.name
+ * vars.resizer.image.name
+ * vars.resizer.image.version
+ * vars.nanny.limits.cpu
+ * vars.nanny.limits.memory
+ * vars.nanny.requests.cpu
+ * vars.nanny.requests.memory
+ * vars.metrics.baseCpu
+ * vars.metrics.cpuPerNode
+ * vars.metrics.baseMemory
+ * vars.metrics.memoryPerNode
+ * vars.eventer.baseMemory
+ * vars.eventer.memoryPerNode
+ */
+
+import "affinities.stg"
 import "tolerations.stg"
 
-/*
-* vars.heapster.image.version
-* vars.heapster.image.name
-* vars.resizer.image.name
-* vars.resizer.image.version
-* vars.nanny.memory
-* vars.metrics.baseCpu
-* vars.metrics.cpuPerNode
-* vars.metrics.baseMemory
-* vars.metrics.memoryPerNode
-* vars.eventer.baseMemory
-* vars.eventer.memoryPerNode
-*/
 heapster-deploy-yaml(parent, vars) ::= <<
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -22,7 +29,7 @@ metadata:
   labels:
     k8s-app: heapster
     version: <vars.heapster.image.version>
-    robobeerun.com/group: cluster-monitoring
+    robobeerun.com/group: cluster-monitoring-heapster
 spec:
   replicas: 1
   selector:
@@ -34,7 +41,7 @@ spec:
       labels:
         k8s-app: heapster
         version: <vars.heapster.image.version>
-        robobeerun.com/group: cluster-monitoring
+        robobeerun.com/group: cluster-monitoring-heapster
     spec:
       containers:
         - image: <vars.heapster.image.name>:<vars.heapster.image.version>
@@ -60,11 +67,11 @@ spec:
           name: heapster-nanny
           resources:
             limits:
-              cpu: 50m
-              memory: <vars.nanny.memory_ki>Ki
+              cpu: <vars.nanny.limits.cpu>
+              memory: <vars.nanny.limits.memory>
             requests:
-              cpu: 50m
-              memory: <vars.nanny.memory_ki>Ki
+              cpu: <vars.nanny.requests.cpu>
+              memory: <vars.nanny.requests.memory>
           env:
             - name: MY_POD_NAME
               valueFrom:
@@ -89,11 +96,11 @@ spec:
           name: eventer-nanny
           resources:
             limits:
-              cpu: 50m
-              memory: <vars.nanny.memory_ki>Ki
+              cpu: <vars.nanny.limits.cpu>
+              memory: <vars.nanny.limits.memory>
             requests:
-              cpu: 50m
-              memory: <vars.nanny.memory_ki>Ki
+              cpu: <vars.nanny.requests.cpu>
+              memory: <vars.nanny.requests.memory>
           env:
             - name: MY_POD_NAME
               valueFrom:
@@ -131,5 +138,6 @@ spec:
                 operator: In
                 values:
                 - preferred
-<tolerations(parent, vars, vars.heapster.tolerations)>
+<affinitiesGroup(parent, vars)>
+<tolerationsGroup(parent, vars, vars.heapster.tolerations)>
 >>

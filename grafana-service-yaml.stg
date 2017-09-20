@@ -1,3 +1,7 @@
+/*
+ *
+ */
+
 grafana-service-yaml(parent, vars) ::= <<
 apiVersion: v1
 kind: Service
@@ -6,7 +10,7 @@ metadata:
   namespace: kube-system
   labels:
     kubernetes.io/name: "Grafana"
-    robobeerun.com/group: cluster-monitoring
+    robobeerun.com/group: cluster-monitoring-heapster
 spec:
   # On production clusters, consider setting up auth for grafana, and
   # exposing Grafana either using a LoadBalancer or a public IP.

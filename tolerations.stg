@@ -1,4 +1,8 @@
-tolerations(parent, vars, tolerations) ::= <<
+/*
+ *
+ */
+
+tolerationsGroup(parent, vars, tolerations) ::= <<
 <if(tolerations)>      tolerations:
 <tolerations:toleration()><endif>
 >>
@@ -6,6 +10,6 @@ tolerations(parent, vars, tolerations) ::= <<
 toleration(toleration) ::= <<
       - effect: <toleration.effect>
         key: <toleration.key>
-        operator: Equal<if(toleration.value)>
-        value: <toleration.value><endif>
+        operator: <if(toleration.value)>Equal<else>Exists<endif>
+<if(toleration.value)>        value: <toleration.value><endif>
 >>
