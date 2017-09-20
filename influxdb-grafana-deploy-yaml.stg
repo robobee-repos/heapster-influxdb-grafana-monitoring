@@ -17,6 +17,10 @@
  * 
  * Optional:
  * 
+ * vars.influxGrafana.affinityRequired
+ * vars.influxGrafana.tolerations[].effect
+ * vars.influxGrafana.tolerations[].key
+ * vars.influxGrafana.tolerations[].value
  * vars.heapsterInfluxdb.persistent.storage.class
  * vars.heapsterInfluxdb.persistent.storage.size
  * vars.heapsterGrafana.persistent.storage.class
@@ -100,11 +104,11 @@ spec:
           resources:
             # keep request = limit to keep this container in guaranteed class
             limits:
-              cpu: <vars.influxGrafana.limits.cpu>
-              memory: <vars.influxGrafana.limits.memory>
+              cpu: <vars.heapsterInfluxdb.limits.cpu>
+              memory: <vars.heapsterInfluxdb.limits.memory>
             requests:
-              cpu: <vars.influxGrafana.requests.cpu>
-              memory: <vars.influxGrafana.requests.memory>
+              cpu: <vars.heapsterInfluxdb.requests.cpu>
+              memory: <vars.heapsterInfluxdb.requests.memory>
           ports:
             - containerPort: 8083
             - containerPort: 8086
@@ -156,7 +160,7 @@ spec:
 <else>
         emptyDir: {}
 <endif>
-<affinitiesGroup(parent, vars)>
-<tolerationsGroup(parent, vars, vars.heapster.tolerations)>
+<affinitiesGroup(parent, vars, vars.influxGrafana.affinityRequired)>
+<tolerationsGroup(parent, vars, vars.influxGrafana.tolerations)>
 
 >>

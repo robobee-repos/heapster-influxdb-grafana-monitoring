@@ -1,5 +1,12 @@
 /*
+ * Mandatory:
  *
+ * tolerations[].effect
+ * tolerations[].key
+ *
+ * Optional:
+ *
+ * tolerations[].value
  */
 
 tolerationsGroup(parent, vars, tolerations) ::= <<

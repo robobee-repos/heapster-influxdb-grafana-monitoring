@@ -1,6 +1,6 @@
 /*
  * Mandatory:
- * 
+ *
  * vars.heapster.image.version
  * vars.heapster.image.name
  * vars.resizer.image.name
@@ -10,15 +10,24 @@
  * vars.nanny.requests.cpu
  * vars.nanny.requests.memory
  * vars.metrics.baseCpu
- * vars.metrics.cpuPerNode
+ * vars.metrics.extraCpu
  * vars.metrics.baseMemory
- * vars.metrics.memoryPerNode
+ * vars.metrics.extraMemory
+ * vars.eventer.baseCpu
+ * vars.eventer.extraCpu
  * vars.eventer.baseMemory
- * vars.eventer.memoryPerNode
+ * vars.eventer.extraMemory
+ *
+ * Optional:
+ *
+ * vars.heapster.affinityRequired
+ * vars.heapster.tolerations[].effect
+ * vars.heapster.tolerations[].key
+ * vars.heapster.tolerations[].value
  */
 
-import "affinities.stg"
 import "tolerations.stg"
+
 
 heapster-deploy-yaml(parent, vars) ::= <<
 apiVersion: extensions/v1beta1
@@ -84,9 +93,9 @@ spec:
           command:
             - /pod_nanny
             - --cpu=<vars.metrics.baseCpu>
-            - --extra-cpu=<vars.metrics.cpuPerNode>
+            - --extra-cpu=<vars.metrics.extraCpu>
             - --memory=<vars.metrics.baseMemory>
-            - --extra-memory=<vars.metrics.memoryPerNode>
+            - --extra-memory=<vars.metrics.extraMemory>
             - --threshold=5
             - --deployment=heapster-<vars.heapster.image.version>
             - --container=heapster
@@ -112,32 +121,16 @@ spec:
                   fieldPath: metadata.namespace
           command:
             - /pod_nanny
-            - --cpu=100m
-            - --extra-cpu=0m
+            - --cpu=<vars.eventer.baseCpu>
+            - --extra-cpu=<vars.eventer.extraCpu>
             - --memory=<vars.eventer.baseMemory>
-            - --extra-memory=<vars.eventer.memoryPerNode>
+            - --extra-memory=<vars.eventer.extraMemory>
             - --threshold=5
             - --deployment=heapster-<vars.heapster.image.version>
             - --container=eventer
             - --poll-period=300000
             - --estimator=exponential
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: robobeerun.com/cluster-monitoring-heapster
-                operator: In
-                values:
-                - required
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-              - key: robobeerun.com/cluster-monitoring-heapster
-                operator: In
-                values:
-                - preferred
-<affinitiesGroup(parent, vars)>
+<affinitiesGroup(parent, vars, vars.heapster.affinityRequired)>
 <tolerationsGroup(parent, vars, vars.heapster.tolerations)>
+
 >>
