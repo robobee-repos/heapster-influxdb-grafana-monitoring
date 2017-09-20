@@ -6,7 +6,7 @@ affinitiesGroup(parent, vars, affinityRequired) ::= <<
       affinity:
         nodeAffinity:
 <if(affinityRequired)>
-          preferredDuringSchedulingIgnoredDuringExecution:
+          requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
               - key: robobeerun.com/cluster-monitoring-heapster
