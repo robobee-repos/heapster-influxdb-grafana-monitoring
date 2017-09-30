@@ -21,6 +21,7 @@
  * vars.influxGrafana.tolerations[].effect
  * vars.influxGrafana.tolerations[].key
  * vars.influxGrafana.tolerations[].value
+ * vars.heapsterInfluxdb.persistent.share
  * vars.heapsterInfluxdb.persistent.storage.class
  * vars.heapsterInfluxdb.persistent.storage.size
  * vars.heapsterGrafana.persistent.storage.class
@@ -115,6 +116,9 @@ spec:
           volumeMounts:
           - name: influxdb-persistent-storage
             mountPath: /data
+<if(vars.heapsterInfluxdb.persistent.share)>
+            subPath: /influxdb
+<endif>
         - image: <vars.heapsterGrafana.image.name>:<vars.heapsterGrafana.image.version>
           name: grafana
           env:
@@ -143,8 +147,15 @@ spec:
             - name: GF_SERVER_ROOT_URL
               value: /api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/
           volumeMounts:
+<if(vars.heapsterInfluxdb.persistent.share)>
+          - name: influxdb-persistent-storage
+<else>
           - name: grafana-persistent-storage
+<endif>
             mountPath: /var
+<if(vars.heapsterInfluxdb.persistent.share)>
+            subPath: /grafana
+<endif>
       volumes:
       - name: influxdb-persistent-storage
 <if(vars.heapsterInfluxdb.persistent)>
