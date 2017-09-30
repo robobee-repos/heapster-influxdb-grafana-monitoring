@@ -117,7 +117,7 @@ spec:
           - name: influxdb-persistent-storage
             mountPath: /data
 <if(vars.heapsterInfluxdb.persistent.share)>
-            subPath: /influxdb
+            subPath: influxdb
 <endif>
         - image: <vars.heapsterGrafana.image.name>:<vars.heapsterGrafana.image.version>
           name: grafana
@@ -154,7 +154,7 @@ spec:
 <endif>
             mountPath: /var
 <if(vars.heapsterInfluxdb.persistent.share)>
-            subPath: /grafana
+            subPath: grafana
 <endif>
       volumes:
       - name: influxdb-persistent-storage
