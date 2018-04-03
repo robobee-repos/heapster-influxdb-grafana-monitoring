@@ -26,10 +26,49 @@
  * vars.heapster.tolerations[].value
  */
 
-import "tolerations.stg"
+import "_affinities.stg"
+import "_tolerations.stg"
 
 
+/*
+ *
+ */
 heapster-deploy-yaml(parent, vars) ::= <<
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: heapster
+  namespace: kube-system
+  labels:
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: heapster-config
+  namespace: kube-system
+  labels:
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: EnsureExists
+data:
+  NannyConfiguration: |-
+    apiVersion: nannyconfig/v1alpha1
+    kind: NannyConfiguration
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eventer-config
+  namespace: kube-system
+  labels:
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: EnsureExists
+data:
+  NannyConfiguration: |-
+    apiVersion: nannyconfig/v1alpha1
+    kind: NannyConfiguration
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -37,8 +76,9 @@ metadata:
   namespace: kube-system
   labels:
     k8s-app: heapster
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
     version: <vars.heapster.image.version>
-    robobeerun.com/group: cluster-monitoring-heapster
 spec:
   replicas: 1
   selector:
@@ -50,8 +90,10 @@ spec:
       labels:
         k8s-app: heapster
         version: <vars.heapster.image.version>
-        robobeerun.com/group: cluster-monitoring-heapster
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
+      priorityClassName: system-cluster-critical
       containers:
         - image: <vars.heapster.image.name>:<vars.heapster.image.version>
           name: heapster
@@ -90,8 +132,12 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+          volumeMounts:
+          - name: heapster-config-volume
+            mountPath: /etc/config
           command:
             - /pod_nanny
+            - --config-dir=/etc/config
             - --cpu=<vars.metrics.baseCpu>
             - --extra-cpu=<vars.metrics.extraCpu>
             - --memory=<vars.metrics.baseMemory>
@@ -119,8 +165,12 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+          volumeMounts:
+          - name: eventer-config-volume
+            mountPath: /etc/config
           command:
             - /pod_nanny
+            - --config-dir=/etc/config
             - --cpu=<vars.eventer.baseCpu>
             - --extra-cpu=<vars.eventer.extraCpu>
             - --memory=<vars.eventer.baseMemory>
@@ -130,7 +180,19 @@ spec:
             - --container=eventer
             - --poll-period=300000
             - --estimator=exponential
-<affinitiesGroup(parent, vars, vars.heapster.affinityRequired)>
-<tolerationsGroup(parent, vars, vars.heapster.tolerations)>
+      volumes:
+        - name: heapster-config-volume
+          configMap:
+            name: heapster-config
+        - name: eventer-config-volume
+          configMap:
+            name: eventer-config
+      serviceAccountName: heapster
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+      <affinitiesGroup(parent, vars, vars.gitea.affinityRequired)>
+      <tolerationMaster(parent, vars, vars.gitea.allowOnMaster)>
+      <tolerations(parent, vars, vars.gitea.tolerations, vars.gitea.allowOnMaster)>
 
 >>
