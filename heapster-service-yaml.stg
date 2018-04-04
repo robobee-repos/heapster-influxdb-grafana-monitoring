@@ -1,7 +1,6 @@
 /*
  *
  */
-
 heapster-service-yaml(parent, vars) ::= <<
 kind: Service
 apiVersion: v1

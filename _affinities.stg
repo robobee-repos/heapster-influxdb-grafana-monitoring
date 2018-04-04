@@ -9,7 +9,7 @@
  * Optional:
  *
  * affinity.required
-*/
+ */
 affinitiesGroup(parent, vars, affinity) ::= <<
 affinity:
   nodeAffinity:

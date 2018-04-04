@@ -3,6 +3,10 @@
  *
  * vars.heapster.image.version
  * vars.heapster.image.name
+ * vars.eventer.baseCpu
+ * vars.eventer.extraCpu
+ * vars.eventer.baseMemory
+ * vars.eventer.extraMemory
  * vars.resizer.image.name
  * vars.resizer.image.version
  * vars.nanny.limits.cpu
@@ -13,10 +17,6 @@
  * vars.metrics.extraCpu
  * vars.metrics.baseMemory
  * vars.metrics.extraMemory
- * vars.eventer.baseCpu
- * vars.eventer.extraCpu
- * vars.eventer.baseMemory
- * vars.eventer.extraMemory
  *
  * Optional:
  *
@@ -31,7 +31,6 @@
 
 import "_affinities.stg"
 import "_tolerations.stg"
-
 
 /*
  *
