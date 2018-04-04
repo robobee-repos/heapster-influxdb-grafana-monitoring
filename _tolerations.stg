@@ -13,7 +13,7 @@ tolerationMasterGroup(parent, vars, allowOnMaster) ::= <<
 /*
  * Adds toleration entry so the pod can run on the master nodes.
  */
-tolerationMaster(parent, vars, allowOnMaster) ::= <<
+tolerationMasterEntry(parent, vars, allowOnMaster) ::= <<
 <if(allowOnMaster)>
       - effect: NoSchedule
         key: node-role.kubernetes.io/master
@@ -30,7 +30,7 @@ tolerationMaster(parent, vars, allowOnMaster) ::= <<
  * tolerations[].effect
  * tolerations[].value
  */
-tolerations(parent, vars, tolerations, allowOnMaster) ::= <<
+tolerationsGroup(parent, vars, tolerations, allowOnMaster) ::= <<
       <tolerationsHeader(parent, vars, tolerations, allowOnMaster)>
 <tolerations:toleration();separator="\n">
 >>
@@ -41,7 +41,7 @@ tolerations:
 <endif>
 %>
 
-toleration(toleration) ::= <<
+tolerationsEntry(toleration) ::= <<
       - effect: <toleration.effect>
         key: <toleration.key>
         operator: <if(toleration.value)>Equal<else>Exists<endif><if(toleration.value)>

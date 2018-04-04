@@ -1,14 +1,23 @@
 /*
  * Adds affinity section.
- */
-affinitiesGroup(parent, vars, affinityRequired) ::= <<
+ *
+ * Mandatory:
+ *
+ * affinity.key
+ * affinity.name
+ * 
+ * Optional:
+ *
+ * affinity.required
+*/
+affinitiesGroup(parent, vars, affinity) ::= <<
 affinity:
   nodeAffinity:
-<if(affinityRequired)>
+<if(affinity.required)>
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: muellerpublic.de/web
+        - key: <affinity.key>
           operator: In
           values:
           - required
@@ -17,7 +26,7 @@ affinity:
     - weight: 1
       preference:
         matchExpressions:
-        - key: muellerpublic.de/web
+        - key: <affinity.key>
           operator: In
           values:
           - preferred
@@ -28,9 +37,9 @@ affinity:
       podAffinityTerm:
         labelSelector:
           matchExpressions:
-          - key: muellerpublic.de/group
+          - key: <affinity.key>
             operator: In
             values:
-            - anrisoftware
+            - <affinity.name>
         topologyKey: kubernetes.io/hostname
 >>
