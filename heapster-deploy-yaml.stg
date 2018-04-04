@@ -20,7 +20,10 @@
  *
  * Optional:
  *
- * vars.heapster.affinityRequired
+ * vars.heapster.affinity.key
+ * vars.heapster.affinity.name
+ * vars.heapster.affinity.required
+ * vars.heapster.allowOnMaster
  * vars.heapster.tolerations[].effect
  * vars.heapster.tolerations[].key
  * vars.heapster.tolerations[].value
@@ -34,6 +37,7 @@ import "_tolerations.stg"
  *
  */
 heapster-deploy-yaml(parent, vars) ::= <<
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -191,8 +195,10 @@ spec:
       tolerations:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
-      <affinitiesGroup(parent, vars, vars.gitea.affinityRequired)>
-      <tolerationMaster(parent, vars, vars.gitea.allowOnMaster)>
-      <tolerations(parent, vars, vars.gitea.tolerations, vars.gitea.allowOnMaster)>
+      <tolerationMasterEntry(parent, vars, vars.heapster.allowOnMaster)>
+      <tolerationsEntry(parent, vars, vars.heapster.tolerations)>
+      <if(vars.heapster.affinity)>
+      <affinitiesGroup(parent, vars, vars.heapster.affinity)>
+      <endif>
 
 >>

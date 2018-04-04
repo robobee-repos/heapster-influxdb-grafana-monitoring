@@ -6,34 +6,40 @@
  * vars.influxGrafana.limits.memory
  * vars.influxGrafana.requests.cpu
  * vars.influxGrafana.requests.memory
- * vars.heapsterInfluxdb.image.name
- * vars.heapsterInfluxdb.image.version
- * vars.heapsterGrafana.image.name
- * vars.heapsterGrafana.image.version
- * vars.heapsterGrafana.limits.cpu
- * vars.heapsterGrafana.limits.memory
- * vars.heapsterGrafana.requests.cpu
- * vars.heapsterGrafana.requests.memory
+ * vars.influxdb.image.name
+ * vars.influxdb.image.version
+ * vars.grafana.image.name
+ * vars.grafana.image.version
+ * vars.grafana.limits.cpu
+ * vars.grafana.limits.memory
+ * vars.grafana.requests.cpu
+ * vars.grafana.requests.memory
  * 
  * Optional:
  * 
- * vars.influxGrafana.affinityRequired
+ * vars.influxGrafana.affinity.key
+ * vars.influxGrafana.affinity.name
+ * vars.influxGrafana.affinity.required
+ * vars.influxGrafana.allowOnMaster
  * vars.influxGrafana.tolerations[].effect
  * vars.influxGrafana.tolerations[].key
  * vars.influxGrafana.tolerations[].value
- * vars.heapsterInfluxdb.persistent.share
- * vars.heapsterInfluxdb.persistent.storage.class
- * vars.heapsterInfluxdb.persistent.storage.size
- * vars.heapsterGrafana.persistent.storage.class
- * vars.heapsterGrafana.persistent.storage.size
+ * vars.influxdb.persistent.share
+ * vars.influxdb.persistent.storage.class
+ * vars.influxdb.persistent.storage.size
+ * vars.grafana.persistent.storage.class
+ * vars.grafana.persistent.storage.size
  */
 
-import "affinities.stg"
-import "tolerations.stg"
+import "_affinities.stg"
+import "_tolerations.stg"
 
+/*
+ *
+ */
 influxdb-grafana-deploy-yaml(parent, vars) ::= <<
 
-<if(vars.heapsterInfluxdb.persistent)>
+<if(vars.influxdb.persistent)>
 ---
 
 apiVersion: v1
@@ -42,19 +48,19 @@ metadata:
   name: influxdb-persistent-storage
   namespace: kube-system
   annotations:
-    volume.beta.kubernetes.io/storage-class: <vars.heapsterInfluxdb.persistent.storage.class>
+    volume.beta.kubernetes.io/storage-class: <vars.influxdb.persistent.storage.class>
+    addonmanager.kubernetes.io/mode: Reconcile
   labels:
-    k8s-app: influxGrafana
-    robobeerun.com/group: cluster-monitoring-heapster
+    k8s-app: influxdb
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: <vars.heapsterInfluxdb.persistent.storage.size>
+      storage: <vars.influxdb.persistent.storage.size>
 <endif>
 
-<if(vars.heapsterGrafana.persistent)>
+<if(vars.grafana.persistent)>
 ---
 
 apiVersion: v1
@@ -63,16 +69,16 @@ metadata:
   name: grafana-persistent-storage
   namespace: kube-system
   annotations:
-    volume.beta.kubernetes.io/storage-class: <vars.heapsterGrafana.persistent.storage.class>
+    volume.beta.kubernetes.io/storage-class: <vars.grafana.persistent.storage.class>
+    addonmanager.kubernetes.io/mode: Reconcile
   labels:
-    k8s-app: influxGrafana
-    robobeerun.com/group: cluster-monitoring-heapster
+    k8s-app: grafana
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: <vars.heapsterGrafana.persistent.storage.size>
+      storage: <vars.grafana.persistent.storage.size>
 <endif>
 
 ---
@@ -85,7 +91,8 @@ metadata:
   labels:
     k8s-app: influxGrafana
     version: <vars.influxGrafana.image.version>
-    robobeerun.com/group: cluster-monitoring-heapster
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
 spec:
   replicas: 1
   selector:
@@ -97,39 +104,42 @@ spec:
       labels:
         k8s-app: influxGrafana
         version: <vars.influxGrafana.image.version>
-        robobeerun.com/group: cluster-monitoring-heapster
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
+      priorityClassName: system-cluster-critical
       containers:
-        - image: <vars.heapsterInfluxdb.image.name>:<vars.heapsterInfluxdb.image.version>
-          name: influxdb
+        - name: influxdb
+          image: <vars.influxdb.image.name>:<vars.influxdb.image.version>
           resources:
-            # keep request = limit to keep this container in guaranteed class
             limits:
-              cpu: <vars.heapsterInfluxdb.limits.cpu>
-              memory: <vars.heapsterInfluxdb.limits.memory>
+              cpu: <vars.influxdb.limits.cpu>
+              memory: <vars.influxdb.limits.memory>
             requests:
-              cpu: <vars.heapsterInfluxdb.requests.cpu>
-              memory: <vars.heapsterInfluxdb.requests.memory>
+              cpu: <vars.influxdb.requests.cpu>
+              memory: <vars.influxdb.requests.memory>
           ports:
-            - containerPort: 8083
-            - containerPort: 8086
+            - name: http
+              containerPort: 8083
+            - name: api
+              containerPort: 8086
           volumeMounts:
           - name: influxdb-persistent-storage
             mountPath: /data
-<if(vars.heapsterInfluxdb.persistent.share)>
+<if(vars.influxdb.persistent.share)>
             subPath: influxdb
 <endif>
-        - image: <vars.heapsterGrafana.image.name>:<vars.heapsterGrafana.image.version>
+        - image: <vars.grafana.image.name>:<vars.grafana.image.version>
           name: grafana
           env:
           resources:
             # keep request = limit to keep this container in guaranteed class
             limits:
-              cpu: <vars.heapsterGrafana.limits.cpu>
-              memory: <vars.heapsterGrafana.limits.memory>
+              cpu: <vars.grafana.limits.cpu>
+              memory: <vars.grafana.limits.memory>
             requests:
-              cpu: <vars.heapsterGrafana.requests.cpu>
-              memory: <vars.heapsterGrafana.requests.memory>
+              cpu: <vars.grafana.requests.cpu>
+              memory: <vars.grafana.requests.memory>
           env:
             # This variable is required to setup templates in Grafana.
             - name: INFLUXDB_SERVICE_URL
@@ -145,33 +155,42 @@ spec:
             - name: GF_AUTH_ANONYMOUS_ORG_ROLE
               value: Admin
             - name: GF_SERVER_ROOT_URL
-              value: /api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/
+              value: /api/v1/namespaces/kube-system/services/monitoring-grafana/proxy/
+          ports:
+          - name: ui
+            containerPort: 3000
           volumeMounts:
-<if(vars.heapsterInfluxdb.persistent.share)>
+<if(vars.influxdb.persistent.share)>
           - name: influxdb-persistent-storage
 <else>
           - name: grafana-persistent-storage
 <endif>
             mountPath: /var
-<if(vars.heapsterInfluxdb.persistent.share)>
+<if(vars.influxdb.persistent.share)>
             subPath: grafana
 <endif>
       volumes:
       - name: influxdb-persistent-storage
-<if(vars.heapsterInfluxdb.persistent)>
+<if(vars.influxdb.persistent)>
         persistentVolumeClaim:
           claimName: influxdb-persistent-storage
 <else>
         emptyDir: {}
 <endif>
       - name: grafana-persistent-storage
-<if(vars.heapsterGrafana.persistent)>
+<if(vars.grafana.persistent)>
         persistentVolumeClaim:
           claimName: grafana-persistent-storage
 <else>
         emptyDir: {}
 <endif>
-<affinitiesGroup(parent, vars, vars.influxGrafana.affinityRequired)>
-<tolerationsGroup(parent, vars, vars.influxGrafana.tolerations)>
+      tolerations:
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+      <tolerationMasterEntry(parent, vars, vars.influxGrafana.allowOnMaster)>
+      <tolerationsEntry(parent, vars, vars.influxGrafana.tolerations)>
+      <if(vars.influxGrafana.affinity)>
+      <affinitiesGroup(parent, vars, vars.influxGrafana.affinity)>
+      <endif>
 
 >>

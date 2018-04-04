@@ -9,13 +9,14 @@ metadata:
   name: heapster
   namespace: kube-system
   labels:
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
     kubernetes.io/name: "Heapster"
-    robobeerun.com/group: cluster-monitoring-heapster
-spec:
-  ports:
+spec: 
+  ports: 
     - port: 80
       targetPort: 8082
-  selector:
+  selector: 
     k8s-app: heapster
 
 >>
