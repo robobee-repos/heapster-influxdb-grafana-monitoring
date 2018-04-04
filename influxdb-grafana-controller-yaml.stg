@@ -37,7 +37,7 @@ import "_tolerations.stg"
 /*
  *
  */
-influxdb-grafana-deploy-yaml(parent, vars) ::= <<
+influxdb-grafana-controller-yaml(parent, vars) ::= <<
 
 <if(vars.influxdb.persistent)>
 ---

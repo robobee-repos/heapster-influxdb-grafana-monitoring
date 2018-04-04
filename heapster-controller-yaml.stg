@@ -35,7 +35,7 @@ import "_tolerations.stg"
 /*
  *
  */
-heapster-deploy-yaml(parent, vars) ::= <<
+heapster-controller-yaml(parent, vars) ::= <<
 ---
 apiVersion: v1
 kind: ServiceAccount
