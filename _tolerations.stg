@@ -13,9 +13,9 @@ tolerationMasterGroup(parent, vars, allowOnMaster) ::= <<
  */
 tolerationMasterEntry(parent, vars, allowOnMaster) ::= <<
 <if(allowOnMaster)>
-  - effect: NoSchedule
-    key: node-role.kubernetes.io/master
-    operator: Equal
+- effect: NoSchedule
+  key: node-role.kubernetes.io/master
+  operator: Equal
 <endif>
 >>
 
