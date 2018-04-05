@@ -195,7 +195,11 @@ spec:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
         <tolerationMasterEntry(parent, vars, vars.heapster.allowOnMaster)>
-<if(vars.heapster.tolerations)>        <tolerationsEntry(parent, vars, vars.heapster.tolerations)><endif>
-<if(vars.heapster.affinity)>      <affinitiesGroup(parent, vars, vars.heapster.affinity)><endif>
+<if(vars.heapster.tolerations)>
+        <tolerationsEntry(parent, vars, vars.heapster.tolerations)>
+<endif>
+<if(vars.heapster.affinity)>
+      <affinitiesGroup(parent, vars, vars.heapster.affinity)>
+<endif>
 
 >>
