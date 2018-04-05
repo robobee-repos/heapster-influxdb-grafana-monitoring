@@ -185,14 +185,14 @@ spec:
         emptyDir: {}
 <endif>
       tolerations:
-      - key: "CriticalAddonsOnly"
-        operator: "Exists"
-      <tolerationMasterEntry(parent, vars, vars.heapster.allowOnMaster)>
-      <if(vars.heapster.tolerations)>
-      <tolerationsEntry(parent, vars, vars.heapster.tolerations)>
-      <endif>
-      <if(vars.heapster.affinity)>
-      <affinitiesGroup(parent, vars, vars.heapster.affinity)>
-      <endif>
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+        <tolerationMasterEntry(parent, vars, vars.heapster.allowOnMaster)>
+        <if(vars.heapster.tolerations)>
+        <tolerationsEntry(parent, vars, vars.heapster.tolerations)>
+        <endif>
+        <if(vars.heapster.affinity)>
+        <affinitiesGroup(parent, vars, vars.heapster.affinity)>
+        <endif>
 
 >>
