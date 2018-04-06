@@ -29,6 +29,9 @@
  * vars.influxdb.persistent.storage.size
  * vars.grafana.persistent.storage.class
  * vars.grafana.persistent.storage.size
+ * vars.grafana.auth.basic
+ * vars.grafana.auth.anonymous
+ * vars.grafana.server.root
  */
 
 import "_affinities.stg"
@@ -149,13 +152,13 @@ spec:
               # removing these env variables, setup auth for grafana, and expose the grafana
               # service using a LoadBalancer or a public IP.
             - name: GF_AUTH_BASIC_ENABLED
-              value: "false"
+              value: "<if(vars.grafana.auth.basic)>true<else>false<endif>"
             - name: GF_AUTH_ANONYMOUS_ENABLED
-              value: "true"
+              value: "<if(vars.grafana.auth.anonymous)>true<else>false<endif>"
             - name: GF_AUTH_ANONYMOUS_ORG_ROLE
               value: Admin
             - name: GF_SERVER_ROOT_URL
-              value: /api/v1/namespaces/kube-system/services/monitoring-grafana/proxy/
+              value: <if(vars.grafana.server.root)><vars.grafana.server.root><else>/<endif>
           ports:
           - name: ui
             containerPort: 3000
