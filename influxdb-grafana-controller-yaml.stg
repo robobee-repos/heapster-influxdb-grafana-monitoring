@@ -52,7 +52,7 @@ metadata:
   namespace: kube-system
   annotations:
     volume.beta.kubernetes.io/storage-class: <vars.influxdb.persistent.storage.class>
-    addonmanager.kubernetes.io/mode: Reconcile
+    addonmanager.kubernetes.io/mode: EnsureExists
   labels:
     k8s-app: influxdb
 spec:
@@ -73,9 +73,9 @@ metadata:
   namespace: kube-system
   annotations:
     volume.beta.kubernetes.io/storage-class: <vars.grafana.persistent.storage.class>
-    addonmanager.kubernetes.io/mode: Reconcile
   labels:
     k8s-app: grafana
+    addonmanager.kubernetes.io/mode: EnsureExists
 spec:
   accessModes:
     - ReadWriteOnce
