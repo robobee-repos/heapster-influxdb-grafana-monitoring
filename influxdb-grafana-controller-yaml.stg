@@ -52,9 +52,9 @@ metadata:
   namespace: kube-system
   annotations:
     volume.beta.kubernetes.io/storage-class: <vars.influxdb.persistent.storage.class>
-    addonmanager.kubernetes.io/mode: EnsureExists
   labels:
     k8s-app: influxdb
+    addonmanager.kubernetes.io/mode: EnsureExists
 spec:
   accessModes:
     - ReadWriteOnce
