@@ -115,12 +115,16 @@ spec:
         - name: influxdb
           image: <vars.influxdb.image.name>:<vars.influxdb.image.version>
           resources:
+<if(vars.influxdb.limits)>
             limits:
-              cpu: <vars.influxdb.limits.cpu>
-              memory: <vars.influxdb.limits.memory>
+              <if(vars.influxdb.limits.cpu)>cpu: <vars.influxdb.limits.cpu><endif>
+              <if(vars.influxdb.limits.memory)>memory: <vars.influxdb.limits.memory><endif>
+<endif>
+<if(vars.influxdb.requests)>
             requests:
-              cpu: <vars.influxdb.requests.cpu>
-              memory: <vars.influxdb.requests.memory>
+              <if(vars.influxdb.requests.cpu)>cpu: <vars.influxdb.requests.cpu><endif>
+              <if(vars.influxdb.requests.memory)>memory: <vars.influxdb.requests.memory><endif>
+<endif>
           ports:
             - name: http
               containerPort: 8083
@@ -137,12 +141,16 @@ spec:
           env:
           resources:
             # keep request = limit to keep this container in guaranteed class
+<if(vars.grafana.limits)>
             limits:
-              cpu: <vars.grafana.limits.cpu>
-              memory: <vars.grafana.limits.memory>
+              <if(vars.grafana.limits.cpu)>cpu: <vars.grafana.limits.cpu><endif>
+              <if(vars.grafana.limits.memory)>memory: <vars.grafana.limits.memory><endif>
+<endif>
+<if(vars.grafana.requests)>
             requests:
-              cpu: <vars.grafana.requests.cpu>
-              memory: <vars.grafana.requests.memory>
+              <if(vars.grafana.requests.cpu)>cpu: <vars.grafana.requests.cpu><endif>
+              <if(vars.grafana.requests.memory)>memory: <vars.grafana.requests.memory><endif>
+<endif>
           env:
             # This variable is required to setup templates in Grafana.
             - name: INFLUXDB_SERVICE_URL

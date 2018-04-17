@@ -120,12 +120,16 @@ spec:
         - image: <vars.resizer.image.name>:<vars.resizer.image.version>
           name: heapster-nanny
           resources:
+<if(vars.nanny.limits)>
             limits:
-              cpu: <vars.nanny.limits.cpu>
-              memory: <vars.nanny.limits.memory>
+              <if(vars.nanny.limits.cpu)>cpu: <vars.nanny.limits.cpu><endif>
+              <if(vars.nanny.limits.memory)>memory: <vars.nanny.limits.memory><endif>
+<endif>
+<if(vars.nanny.requests)>
             requests:
-              cpu: <vars.nanny.requests.cpu>
-              memory: <vars.nanny.requests.memory>
+              <if(vars.nanny.requests.cpu)>cpu: <vars.nanny.requests.cpu><endif>
+              <if(vars.nanny.requests.memory)>memory: <vars.nanny.requests.memory><endif>
+<endif>
           env:
             - name: MY_POD_NAME
               valueFrom:
@@ -153,12 +157,16 @@ spec:
         - image: <vars.resizer.image.name>:<vars.resizer.image.version>
           name: eventer-nanny
           resources:
+<if(vars.nanny.limits)>
             limits:
-              cpu: <vars.nanny.limits.cpu>
-              memory: <vars.nanny.limits.memory>
+              <if(vars.nanny.limits.cpu)>cpu: <vars.nanny.limits.cpu><endif>
+              <if(vars.nanny.limits.memory)>memory: <vars.nanny.limits.memory><endif>
+<endif>
+<if(vars.nanny.requests)>
             requests:
-              cpu: <vars.nanny.requests.cpu>
-              memory: <vars.nanny.requests.memory>
+              <if(vars.nanny.requests.cpu)>cpu: <vars.nanny.requests.cpu><endif>
+              <if(vars.nanny.requests.memory)>memory: <vars.nanny.requests.memory><endif>
+<endif>
           env:
             - name: MY_POD_NAME
               valueFrom:
