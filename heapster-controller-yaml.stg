@@ -93,7 +93,6 @@ spec:
     metadata:
       labels:
         k8s-app: heapster
-        app: grafana
         version: <vars.heapster.image.version>
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''

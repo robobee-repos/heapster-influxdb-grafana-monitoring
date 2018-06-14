@@ -107,6 +107,7 @@ spec:
     metadata:
       labels:
         k8s-app: influxGrafana
+        app: grafana
         version: <vars.influxGrafana.image.version>
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
