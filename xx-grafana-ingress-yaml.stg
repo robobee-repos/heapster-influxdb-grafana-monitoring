@@ -1,0 +1,48 @@
+/*
+ * Mandatory:
+ *
+ * vars.redmine.nginx.hosts[]
+ * vars.nginx.clientMaxBodySize
+ *
+ */
+
+import "robobeerun-templates/_cert_config.stg"
+import "robobeerun-templates/_ingress_config.stg"
+
+/*
+ * 
+ */
+xx-redmine-ingress-yaml(parent, vars) ::= <<
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: redmine-anrisoftware-com
+  namespace: anrisoftware-com
+  labels:
+    app: redmine
+    tier: frontend
+    deployment: redmine
+  annotations:
+    <ingressDefaultAnnotations(parent, vars, vars.nginx)>
+spec:
+  <ingressDefaultSpec(parent, vars, vars.redmine.nginx, "redmine-anrisoftware-com")>
+
+---
+
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: redmine-anrisoftware-com
+  namespace: anrisoftware-com
+spec:
+  <certDefaultSpecProd(parent, vars, vars.redmine.nginx, "redmine-anrisoftware-com")>
+
+---
+
+<ingressService(parent, vars, "anrisoftware-com", "redmine", "redmine-anrisoftware-com")>
+
+---
+
+>>
