@@ -19,7 +19,7 @@ xx-grafana-ingress-yaml(parent, vars) ::= <<
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: grafana-andrea-muellerpublic-de
+  name: monitoring-andrea-muellerpublic-de
   namespace: kube-system
   labels:
     app: grafana
@@ -28,21 +28,21 @@ metadata:
   annotations:
     <ingressDefaultAnnotations(parent, vars, vars.nginx)>
 spec:
-  <ingressDefaultSpec(parent, vars, vars.grafana, "grafana-andrea-muellerpublic-de")>
+  <ingressDefaultSpec(parent, vars, vars.grafana, "monitoring-andrea-muellerpublic-de")>
 
 ---
 
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
-  name: grafana-andrea-muellerpublic-de
+  name: monitoring-andrea-muellerpublic-de
   namespace: kube-system
 spec:
-  <certDefaultSpecProd(parent, vars, vars.grafana, "grafana-andrea-muellerpublic-de")>
+  <certDefaultSpecProd(parent, vars, vars.grafana, "monitoring-andrea-muellerpublic-de")>
 
 ---
 
-<ingressService(parent, vars, "kube-system", "grafana", "grafana-andrea-muellerpublic-de")>
+<ingressService(parent, vars, "kube-system", "grafana", "monitoring-andrea-muellerpublic-de")>
 
 ---
 
