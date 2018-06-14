@@ -1,9 +1,9 @@
 /*
  * Mandatory:
  *
- * vars.redmine.nginx.hosts[]
+ * vars.grafana.hosts[]
  * vars.nginx.clientMaxBodySize
- *
+ * 
  */
 
 import "robobeerun-templates/_cert_config.stg"
@@ -12,37 +12,39 @@ import "robobeerun-templates/_ingress_config.stg"
 /*
  * 
  */
-xx-redmine-ingress-yaml(parent, vars) ::= <<
+xx-grafana-ingress-yaml(parent, vars) ::= <<
+<if(vars.grafana.hosts)>
 ---
 
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: redmine-anrisoftware-com
-  namespace: anrisoftware-com
+  name: grafana-andrea-muellerpublic-de
+  namespace: kube-system
   labels:
-    app: redmine
+    app: grafana
     tier: frontend
-    deployment: redmine
+    deployment: grafana
   annotations:
     <ingressDefaultAnnotations(parent, vars, vars.nginx)>
 spec:
-  <ingressDefaultSpec(parent, vars, vars.redmine.nginx, "redmine-anrisoftware-com")>
+  <ingressDefaultSpec(parent, vars, vars.grafana, "grafana-andrea-muellerpublic-de")>
 
 ---
 
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
-  name: redmine-anrisoftware-com
-  namespace: anrisoftware-com
+  name: grafana-andrea-muellerpublic-de
+  namespace: kube-system
 spec:
-  <certDefaultSpecProd(parent, vars, vars.redmine.nginx, "redmine-anrisoftware-com")>
+  <certDefaultSpecProd(parent, vars, vars.grafana, "grafana-andrea-muellerpublic-de")>
 
 ---
 
-<ingressService(parent, vars, "anrisoftware-com", "redmine", "redmine-anrisoftware-com")>
+<ingressService(parent, vars, "kube-system", "grafana", "grafana-andrea-muellerpublic-de")>
 
 ---
 
+<endif>
 >>
