@@ -42,7 +42,7 @@ spec:
 
 ---
 
-<ingressService(parent, vars, "kube-system", "grafana", "monitoring-andrea-muellerpublic-de")>
+<ingressService(parent, vars, vars.grafana, "kube-system", "grafana", "monitoring-andrea-muellerpublic-de")>
 
 ---
 
