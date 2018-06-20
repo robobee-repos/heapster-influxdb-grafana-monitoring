@@ -37,7 +37,8 @@
  * vars.grafana.auth.anonymous.orgName
  * vars.grafana.auth.anonymous.orgRole
  * vars.grafana.auth.keycloakOauth
- * vars.grafana.auth.keycloakOauth.cliendSecret
+ * vars.grafana.auth.keycloakOauth.clientId
+ * vars.grafana.auth.keycloakOauth.clientSecret
  * vars.grafana.auth.keycloakOauth.host
  * vars.grafana.auth.keycloakOauth.realm
  * vars.grafana.auth.basic
@@ -132,8 +133,8 @@ data:
     <if(vars.grafana.auth.keycloakOauth)>
     [auth.generic_oauth]
     enabled = true
-    client_id = <vars.grafana.auth.keycloakOauth.cliendId>
-    client_secret = <vars.grafana.auth.keycloakOauth.cliendSecret>
+    client_id = <vars.grafana.auth.keycloakOauth.clientId>
+    client_secret = <vars.grafana.auth.keycloakOauth.clientSecret>
     scopes = openid email profile
     auth_url = <vars.grafana.auth.keycloakOauth.host>/auth/realms/<vars.grafana.auth.keycloakOauth.realm>/protocol/openid-connect/auth
     token_url = <vars.grafana.auth.keycloakOauth.host>/auth/realms/<vars.grafana.auth.keycloakOauth.realm>/protocol/openid-connect/token
