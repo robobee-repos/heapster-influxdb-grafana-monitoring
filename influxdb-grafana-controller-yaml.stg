@@ -189,8 +189,7 @@ spec:
               containerPort: 8086
           volumeMounts:
           - name: grafana-config
-            mountPath: /etc/grafana/grafana.ini
-            subPath: grafana.ini
+            mountPath: /etc/grafana
           - name: influxdb-persistent-storage
             mountPath: /data
 <if(vars.influxdb.persistent.share)>
