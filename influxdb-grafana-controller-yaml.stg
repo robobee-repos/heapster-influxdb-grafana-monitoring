@@ -210,6 +210,8 @@ spec:
           - name: ui
             containerPort: 3000
           volumeMounts:
+          - mountPath: /etc/ssl/certs
+            name: ca-certificates
           - name: grafana-config
             mountPath: /etc/grafana
 <if(vars.influxdb.persistent.share)>
@@ -222,6 +224,9 @@ spec:
             subPath: grafana
 <endif>
       volumes:
+      - name: ca-certificates
+        hostPath:
+          path: /etc/ssl/certs
       - name: grafana-config
         configMap:
           name: grafana-<vars.grafana.revision>
