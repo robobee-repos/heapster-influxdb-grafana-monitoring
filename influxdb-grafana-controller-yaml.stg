@@ -109,6 +109,9 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
   grafana.ini: |
+    [log]
+    level = debug
+
     <if(vars.grafana.server)>
     [server]
     root_url = <vars.grafana.server.rootUrl>
