@@ -214,6 +214,8 @@ spec:
             containerPort: 3000
           volumeMounts:
           - mountPath: /etc/ssl/certs
+            name: certs
+          - mountPath: /usr/share/ca-certificates
             name: ca-certificates
           - name: grafana-config
             mountPath: /etc/grafana
@@ -227,9 +229,12 @@ spec:
             subPath: grafana
 <endif>
       volumes:
-      - name: ca-certificates
+      - name: certs
         hostPath:
           path: /etc/ssl/certs
+      - name: ca-certificates
+        hostPath:
+          path: /usr/share/ca-certificates
       - name: grafana-config
         configMap:
           name: grafana-<vars.grafana.revision>
