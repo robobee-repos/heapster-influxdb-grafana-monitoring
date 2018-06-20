@@ -14,6 +14,7 @@
  * vars.grafana.limits.memory
  * vars.grafana.requests.cpu
  * vars.grafana.requests.memory
+ * vars.grafana.revision
  * 
  * Optional:
  * 
@@ -29,9 +30,17 @@
  * vars.influxdb.persistent.storage.size
  * vars.grafana.persistent.storage.class
  * vars.grafana.persistent.storage.size
- * vars.grafana.auth.basic
+ * vars.grafana.server.rootUrl
+ * vars.grafana.users.allowSignUp
+ * vars.grafana.auth.disableLoginForm
  * vars.grafana.auth.anonymous
- * vars.grafana.server.root
+ * vars.grafana.auth.anonymous.orgName
+ * vars.grafana.auth.anonymous.orgRole
+ * vars.grafana.auth.keycloakOauth
+ * vars.grafana.auth.keycloakOauth.cliendSecret
+ * vars.grafana.auth.keycloakOauth.host
+ * vars.grafana.auth.keycloakOauth.realm
+ * vars.grafana.auth.basic
  */
 
 import "robobeerun-templates/_affinities.stg"
@@ -87,6 +96,58 @@ spec:
 
 ---
 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-<vars.grafana.revision>
+  namespace: kube-system
+  labels:
+    k8s-app: influxGrafana
+    version: <vars.influxGrafana.image.version>
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+data:
+  grafana.ini: |
+    <if(vars.grafana.server)>
+    [server]
+    root_url = <vars.grafana.server.rootUrl>
+    <endif>
+
+    <if(vars.grafana.users)>
+    [users]
+    allow_sign_up = <if(vars.grafana.users.allowSignUp)>true<else>false<endif>
+    <endif>
+
+    <if(vars.grafana.auth)>
+    [auth]
+    disable_login_form = <if(vars.grafana.auth.disableLoginForm)>true<else>false<endif>
+
+    <if(vars.grafana.auth.anonymous)>
+    [auth.anonymous]
+    enabled = true
+    org_name = <vars.grafana.auth.anonymous.orgName>
+    org_role = <vars.grafana.auth.anonymous.orgRole>
+    <endif>
+
+    <if(vars.grafana.auth.keycloakOauth)>
+    [auth.generic_oauth]
+    enabled = true
+    client_id = <vars.grafana.auth.keycloakOauth.cliendId>
+    client_secret = <vars.grafana.auth.keycloakOauth.cliendSecret>
+    scopes = openid email profile
+    auth_url = <vars.grafana.auth.keycloakOauth.host>/auth/realms/<vars.grafana.auth.keycloakOauth.realm>/protocol/openid-connect/auth
+    token_url = <vars.grafana.auth.keycloakOauth.host>/auth/realms/<vars.grafana.auth.keycloakOauth.realm>/protocol/openid-connect/token
+    api_url = <vars.grafana.auth.keycloakOauth.host>/auth/realms/<vars.grafana.auth.keycloakOauth.realm>/protocol/openid-connect/userinfo
+    allowed_domains = 
+    allow_sign_up = true
+    <endif>
+
+    <if(vars.grafana.auth.basic)>
+    [auth.basic]
+    enabled = true
+    <endif>
+---
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -126,12 +187,14 @@ spec:
           volumeMounts:
           - name: influxdb-persistent-storage
             mountPath: /data
+          - name: grafana-config
+            mountPath: /etc/grafana/grafana.ini
+            subPath: grafana.ini
 <if(vars.influxdb.persistent.share)>
             subPath: influxdb
 <endif>
         - image: <vars.grafana.image.name>:<vars.grafana.image.version>
           name: grafana
-          env:
           resources:
             # keep request = limit to keep this container in guaranteed class
           <resourcesGroup(parent, vars, vars.grafana)>
@@ -143,14 +206,6 @@ spec:
               # the kubernetes api-server proxy. On production clusters, we recommend
               # removing these env variables, setup auth for grafana, and expose the grafana
               # service using a LoadBalancer or a public IP.
-            - name: GF_AUTH_BASIC_ENABLED
-              value: "<if(vars.grafana.auth.basic)>true<else>false<endif>"
-            - name: GF_AUTH_ANONYMOUS_ENABLED
-              value: "<if(vars.grafana.auth.anonymous)>true<else>false<endif>"
-            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
-              value: Admin
-            - name: GF_SERVER_ROOT_URL
-              value: <if(vars.grafana.server.root)><vars.grafana.server.root><else>/<endif>
           ports:
           - name: ui
             containerPort: 3000
@@ -165,6 +220,9 @@ spec:
             subPath: grafana
 <endif>
       volumes:
+      - name: grafana-config
+        configMap:
+          name: grafana-<vars.grafana.revision>
       - name: influxdb-persistent-storage
 <if(vars.influxdb.persistent)>
         persistentVolumeClaim:
