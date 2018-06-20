@@ -114,6 +114,41 @@ data:
     root_url = <vars.grafana.server.rootUrl>
     <endif>
 
+    <if(vars.grafana.users)>
+    [users]
+    allow_sign_up = <if(vars.grafana.users.allowSignUp)>true<else>false<endif>
+    <endif>
+
+    <if(vars.grafana.auth)>
+    [auth]
+    disable_login_form = <if(vars.grafana.auth.disableLoginForm)>true<else>false<endif>
+
+    <if(vars.grafana.auth.anonymous)>
+    [auth.anonymous]
+    enabled = true
+    org_name = <vars.grafana.auth.anonymous.orgName>
+    org_role = <vars.grafana.auth.anonymous.orgRole>
+    <endif>
+
+    <if(vars.grafana.auth.keycloakOauth)>
+    [auth.generic_oauth]
+    enabled = true
+    client_id = <vars.grafana.auth.keycloakOauth.clientId>
+    client_secret = <vars.grafana.auth.keycloakOauth.clientSecret>
+    scopes = openid email profile
+    auth_url = <vars.grafana.auth.keycloakOauth.host>/auth/realms/<vars.grafana.auth.keycloakOauth.realm>/protocol/openid-connect/auth
+    token_url = <vars.grafana.auth.keycloakOauth.host>/auth/realms/<vars.grafana.auth.keycloakOauth.realm>/protocol/openid-connect/token
+    api_url = <vars.grafana.auth.keycloakOauth.host>/auth/realms/<vars.grafana.auth.keycloakOauth.realm>/protocol/openid-connect/userinfo
+    allowed_domains = 
+    allow_sign_up = true
+    <endif>
+
+    <if(vars.grafana.auth.basic)>
+    [auth.basic]
+    enabled = true
+    <endif>
+    <endif>
+
 ---
 
 apiVersion: extensions/v1beta1
