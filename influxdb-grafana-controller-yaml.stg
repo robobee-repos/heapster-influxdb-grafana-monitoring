@@ -191,7 +191,7 @@ spec:
           - name: influxdb-persistent-storage
             mountPath: /data
           - name: grafana-config
-            mountPath: /etc/grafana/grafana.ini
+            mountPath: /test/grafana.ini
             subPath: grafana.ini
 <if(vars.influxdb.persistent.share)>
             subPath: influxdb
