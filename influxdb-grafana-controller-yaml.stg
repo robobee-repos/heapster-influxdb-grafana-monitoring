@@ -30,6 +30,7 @@
  * vars.influxdb.persistent.storage.size
  * vars.grafana.persistent.storage.class
  * vars.grafana.persistent.storage.size
+ * vars.grafana.log.level
  * vars.grafana.server.rootUrl
  * vars.grafana.users.allowSignUp
  * vars.grafana.auth.disableLoginForm
@@ -109,8 +110,10 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
   grafana.ini: |
+    <if(vars.grafana.log)>
     [log]
-    level = debug
+    level = <vars.grafana.log.level>
+    <endif>
 
     <if(vars.grafana.server)>
     [server]
