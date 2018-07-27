@@ -103,7 +103,7 @@ data:
       udp-read-buffer = 0
 
     [[collectd]]
-      enabled = <vars.influxdb.config.collectd.enabled>
+      enabled = <if(vars.influxdb.config.collectd.enabled)>true<else>false<endif>
       bind-address = ":25826"
       database = "collectd"
       retention-policy = ""
