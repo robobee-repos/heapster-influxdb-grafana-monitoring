@@ -203,6 +203,7 @@ spec:
 <if(vars.influxdb.config.collectd.enabled)>
             - name: collectd
               containerPort: 25826
+              protocol: UDP
 <endif>
           volumeMounts:
           - name: influxdb-persistent-storage

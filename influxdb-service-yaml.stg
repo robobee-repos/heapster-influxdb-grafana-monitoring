@@ -44,7 +44,7 @@ spec:
     - name: collectd
       port: 25826
       targetPort: 25826
-      protocol: TCP
+      protocol: UDP
       nodePort: <vars.influxdb.config.collectd.nodePort>
   selector:
     k8s-app: influxGrafana
