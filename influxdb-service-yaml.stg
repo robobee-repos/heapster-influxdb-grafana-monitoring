@@ -1,5 +1,8 @@
 /*
- *
+ * Optional:
+ * 
+ * vars.influxdb.config.collectd.enabled
+ * vars.influxdb.config.collectd.nodePort
  */
 
 influxdb-service-yaml(parent, vars) ::= <<
@@ -22,5 +25,28 @@ spec:
       targetPort: 8086
   selector:
     k8s-app: influxGrafana
+
+---
+
+<if(vars.influxdb.config.collectd.enabled)>
+apiVersion: v1
+kind: Service
+metadata:
+  name: monitoring-influxdb-collectd
+  namespace: kube-system
+  labels:
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+    kubernetes.io/name: "InfluxDB"
+spec:
+  type: NodePort
+  ports:
+    - name: collectd
+      port: 25826
+      targetPort: 25826
+      nodePort: <vars.influxdb.config.collectd.nodePort>
+  selector:
+    k8s-app: influxGrafana
+<endif>
 
 >>

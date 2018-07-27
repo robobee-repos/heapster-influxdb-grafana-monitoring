@@ -8,6 +8,7 @@
  * vars.influxGrafana.requests.memory
  * vars.influxdb.image.name
  * vars.influxdb.image.version
+ * vars.influxdb.revision
  * vars.grafana.image.name
  * vars.grafana.image.version
  * vars.grafana.limits.cpu
@@ -28,6 +29,8 @@
  * vars.influxdb.persistent.share
  * vars.influxdb.persistent.storage.class
  * vars.influxdb.persistent.storage.size
+ * vars.influxdb.config.collectd.enabled
+ * vars.influxdb.config.collectd.sharedDir
  * vars.grafana.persistent.storage.class
  * vars.grafana.persistent.storage.size
  * vars.grafana.log.level
@@ -186,6 +189,10 @@ spec:
       containers:
         - name: influxdb
           image: <vars.influxdb.image.name>:<vars.influxdb.image.version>
+          command:
+          - influxd
+          - --config
+          - /etc/influxdb/config.toml
           resources:
           <resourcesGroup(parent, vars, vars.influxdb)>
           ports:
@@ -193,12 +200,22 @@ spec:
               containerPort: 8083
             - name: api
               containerPort: 8086
+<if(vars.influxdb.config.collectd.enabled)>
+            - name: api
+              containerPort: 25826
+<endif>
           volumeMounts:
           - name: influxdb-persistent-storage
             mountPath: /data
 <if(vars.influxdb.persistent.share)>
             subPath: influxdb
 <endif>
+<if(vars.influxdb.config.collectd.enabled)>
+          - name: collectd-shared
+            mountPath: <if(vars.influxdb.config.collectd.sharedDir)><vars.influxdb.config.collectd.sharedDir><else>/usr/share/collectd<endif>
+<endif>
+          - name: influxdb-config
+            mountPath: /etc/influxdb
         - image: <vars.grafana.image.name>:<vars.grafana.image.version>
           name: grafana
           resources:
@@ -255,6 +272,14 @@ spec:
 <else>
         emptyDir: {}
 <endif>
+<if(vars.influxdb.config.collectd.enabled)>
+      - name: collectd-shared
+        hostPath:
+          path: <if(vars.influxdb.config.collectd.sharedDir)><vars.influxdb.config.collectd.sharedDir><else>/usr/share/collectd<endif>
+<endif>
+      - name: influxdb-config
+        configMap:
+          name: influxdb-<vars.influxdb.revision>
       tolerations:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
