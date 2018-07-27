@@ -201,7 +201,7 @@ spec:
             - name: api
               containerPort: 8086
 <if(vars.influxdb.config.collectd.enabled)>
-            - name: api
+            - name: collectd
               containerPort: 25826
 <endif>
           volumeMounts:
