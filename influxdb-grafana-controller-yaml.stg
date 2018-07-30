@@ -284,8 +284,8 @@ spec:
       tolerations:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
-        <tolerationMasterEntry(parent, vars, vars.heapster.allowOnMaster)>
-        <tolerationEntries(parent, vars, vars.heapster.tolerations)>
-      <affinitiesGroup(parent, vars, vars.heapster.affinity)>
+        <tolerationMasterEntry(parent, vars, vars.influxGrafana.allowOnMaster)>
+        <tolerationEntries(parent, vars, vars.influxGrafana.tolerations)>
+      <affinitiesGroup(parent, vars, vars.influxGrafana.affinity)>
 
 >>
