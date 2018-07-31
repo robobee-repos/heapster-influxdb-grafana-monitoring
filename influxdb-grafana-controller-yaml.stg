@@ -104,7 +104,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: grafana-<vars.grafana.revision>
+  name: grafana-<vars.grafana.revisionp>
   namespace: kube-system
   labels:
     k8s-app: influxGrafana
@@ -113,6 +113,10 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
   grafana.ini: |
+
+    [paths]
+    plugins = /var/lib/grafana/plugins
+
     <if(vars.grafana.log)>
     [log]
     level = <vars.grafana.log.level>
