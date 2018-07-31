@@ -104,7 +104,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: grafana-<vars.grafana.revisionp>
+  name: grafana-<vars.grafana.revision>
   namespace: kube-system
   labels:
     k8s-app: influxGrafana
