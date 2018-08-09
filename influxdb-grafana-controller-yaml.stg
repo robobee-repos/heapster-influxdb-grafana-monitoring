@@ -16,6 +16,9 @@
  * vars.grafana.requests.cpu
  * vars.grafana.requests.memory
  * vars.grafana.revision
+ * vars.rsync.image.name
+ * vars.rsync.image.version
+ * vars.rsync.ssh.revision
  * 
  * Optional:
  * 
@@ -46,6 +49,10 @@
  * vars.grafana.auth.keycloakOauth.host
  * vars.grafana.auth.keycloakOauth.realm
  * vars.grafana.auth.basic
+ * vars.rsync.limits.cpu
+ * vars.rsync.limits.memory
+ * vars.rsync.requests.cpu
+ * vars.rsync.requests.memory
  */
 
 import "robobeerun-templates/_affinities.stg"
@@ -292,4 +299,89 @@ spec:
         <tolerationEntries(parent, vars, vars.influxGrafana.tolerations)>
       <affinitiesGroup(parent, vars, vars.influxGrafana.affinity)>
 
+---
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: rsync-influxdb-grafana
+  namespace: kube-system
+  labels:
+    k8s-app: rsyncInfluxGrafana
+    version: <vars.influxGrafana.image.version>
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+    tier: backup
+    group: monitoring
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: rsync-influxdb-grafana
+      tier: backup
+      group: monitoring
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: rsync-influxdb-grafana
+        tier: backup
+        group: monitoring
+    spec:
+      containers:
+      - image: <vars.rsync.image.name>:<vars.rsync.image.version>
+        name: rsync
+        env:
+        - name: RSYNC_AUTHORIZED_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rsync-ssh-<vars.rsync.ssh.revision>
+              key: auth-key
+        - name: USER
+          value: "root"
+        - name: RSYNC_STRICT_HOST_KEY_CHECKING_NO
+          value: "true"
+        ports:
+        - containerPort: 2222
+          name: ssh
+        readinessProbe:
+          exec:
+            command:
+            - /readiness.sh
+            - /data/gitea/conf/app.ini
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        <resourcesGroup(parent, vars, vars.rsync)>
+        volumeMounts:
+        - mountPath: "/data"
+          name: data
+          subPath: gitea_data
+        - mountPath: "/html"
+          name: data
+          subPath: gitea_html
+      restartPolicy: Always
+      volumes:
+      - name: data
+<if(vars.influxdb.persistent)>
+        persistentVolumeClaim:
+          claimName: influxdb-persistent-storage
+<else>
+        emptyDir: {}
+<endif>
+      - name: grafana-persistent-storage
+<if(vars.grafana.persistent)>
+        persistentVolumeClaim:
+          claimName: grafana-persistent-storage
+<else>
+        emptyDir: {}
+<endif>
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+        <tolerationMasterEntry(parent, vars, vars.influxGrafana.allowOnMaster)>
+        <tolerationEntries(parent, vars, vars.influxGrafana.tolerations)>
+      <affinitiesGroup(parent, vars, vars.influxGrafana.affinity)>
+
+---
 >>
