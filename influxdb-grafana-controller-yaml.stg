@@ -349,17 +349,16 @@ spec:
           exec:
             command:
             - /readiness.sh
-            - /data/gitea/conf/app.ini
+            - /data/meta/meta.db
           initialDelaySeconds: 5
           timeoutSeconds: 1
         <resourcesGroup(parent, vars, vars.rsync)>
         volumeMounts:
         - mountPath: "/data"
           name: data
-          subPath: gitea_data
-        - mountPath: "/html"
-          name: data
-          subPath: gitea_html
+<if(vars.influxdb.persistent.share)>
+          subPath: influxdb
+<endif>
       restartPolicy: Always
       volumes:
       - name: data
