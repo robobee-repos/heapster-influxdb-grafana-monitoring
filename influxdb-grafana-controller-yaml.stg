@@ -32,6 +32,7 @@
  * vars.influxdb.persistent.share
  * vars.influxdb.persistent.storage.class
  * vars.influxdb.persistent.storage.size
+ * vars.influxdb.persistent.storage.pvcName
  * vars.influxdb.config.collectd.enabled
  * vars.influxdb.config.collectd.sharedDir
  * vars.grafana.persistent.storage.class
@@ -273,7 +274,7 @@ spec:
       - name: influxdb-persistent-storage
 <if(vars.influxdb.persistent)>
         persistentVolumeClaim:
-          claimName: influxdb-persistent-storage
+          claimName: <if(vars.influxdb.persistent.storage.pvcName)><vars.influxdb.persistent.storage.pvcName><else>influxdb-persistent-storage<endif>
 <else>
         emptyDir: {}
 <endif>
@@ -364,7 +365,7 @@ spec:
       - name: data
 <if(vars.influxdb.persistent)>
         persistentVolumeClaim:
-          claimName: influxdb-persistent-storage
+          claimName: <if(vars.influxdb.persistent.storage.pvcName)><vars.influxdb.persistent.storage.pvcName><else>influxdb-persistent-storage<endif>
 <else>
         emptyDir: {}
 <endif>
