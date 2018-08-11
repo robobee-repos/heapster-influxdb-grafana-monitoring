@@ -305,7 +305,7 @@ spec:
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: rsync-influxdb-grafana
+  name: rsync-influxdb
   namespace: kube-system
   labels:
     k8s-app: rsyncInfluxGrafana
@@ -318,7 +318,7 @@ spec:
   replicas: 0
   selector:
     matchLabels:
-      app: rsync-influxdb-grafana
+      app: rsync-influxdb
       tier: backup
       group: monitoring
   strategy:
@@ -326,7 +326,7 @@ spec:
   template:
     metadata:
       labels:
-        app: rsync-influxdb-grafana
+        app: rsync-influxdb
         tier: backup
         group: monitoring
     spec:
@@ -384,4 +384,93 @@ spec:
       <affinitiesGroup(parent, vars, vars.influxGrafana.affinity)>
 
 ---
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: rsync-grafana
+  namespace: kube-system
+  labels:
+    k8s-app: rsyncInfluxGrafana
+    version: <vars.influxGrafana.image.version>
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+    tier: backup
+    group: monitoring
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: rsync-grafana
+      tier: backup
+      group: monitoring
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: rsync-grafana
+        tier: backup
+        group: monitoring
+    spec:
+      containers:
+      - image: <vars.rsync.image.name>:<vars.rsync.image.version>
+        name: rsync
+        env:
+        - name: RSYNC_AUTHORIZED_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rsync-ssh-<vars.rsync.ssh.revision>
+              key: auth-key
+        - name: USER
+          value: "root"
+        - name: RSYNC_STRICT_HOST_KEY_CHECKING_NO
+          value: "true"
+        ports:
+        - containerPort: 2222
+          name: ssh
+        readinessProbe:
+          exec:
+            command:
+            - /readiness.sh
+            - /data/meta/meta.db
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        <resourcesGroup(parent, vars, vars.rsync)>
+        volumeMounts:
+          - mountPath: "/data"
+            name: data
+<if(vars.influxdb.persistent.share)>
+          - name: influxdb-persistent-storage
+<else>
+          - name: grafana-persistent-storage
+<endif>
+            mountPath: /var
+<if(vars.influxdb.persistent.share)>
+            subPath: grafana
+<endif>
+      volumes:
+      - name: data
+<if(vars.influxdb.persistent)>
+        persistentVolumeClaim:
+          claimName: <if(vars.influxdb.persistent.storage.pvcName)><vars.influxdb.persistent.storage.pvcName><else>influxdb-persistent-storage<endif>
+<else>
+        emptyDir: {}
+<endif>
+      - name: grafana-persistent-storage
+<if(vars.grafana.persistent)>
+        persistentVolumeClaim:
+          claimName: grafana-persistent-storage
+<else>
+        emptyDir: {}
+<endif>
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+        <tolerationMasterEntry(parent, vars, vars.influxGrafana.allowOnMaster)>
+        <tolerationEntries(parent, vars, vars.influxGrafana.tolerations)>
+      <affinitiesGroup(parent, vars, vars.influxGrafana.affinity)>
+
+---
+
 >>
