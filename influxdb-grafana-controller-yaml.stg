@@ -302,6 +302,7 @@ spec:
 
 ---
 
+<if(vars.influxdb.persistent)>
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
@@ -363,28 +364,19 @@ spec:
       restartPolicy: Always
       volumes:
       - name: data
-<if(vars.influxdb.persistent)>
         persistentVolumeClaim:
           claimName: <if(vars.influxdb.persistent.storage.pvcName)><vars.influxdb.persistent.storage.pvcName><else>influxdb-persistent-storage<endif>
-<else>
-        emptyDir: {}
-<endif>
-      - name: grafana-persistent-storage
-<if(vars.grafana.persistent)>
-        persistentVolumeClaim:
-          claimName: grafana-persistent-storage
-<else>
-        emptyDir: {}
-<endif>
       tolerations:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
         <tolerationMasterEntry(parent, vars, vars.influxGrafana.allowOnMaster)>
         <tolerationEntries(parent, vars, vars.influxGrafana.tolerations)>
       <affinitiesGroup(parent, vars, vars.influxGrafana.affinity)>
+<endif>
 
 ---
 
+<if(vars.influxdb.persistent || vars.grafana.persistent)>
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
@@ -441,28 +433,17 @@ spec:
           - mountPath: "/data"
             name: data
 <if(vars.influxdb.persistent.share)>
-          - name: influxdb-persistent-storage
-<else>
-          - name: grafana-persistent-storage
-<endif>
-            mountPath: /var
-<if(vars.influxdb.persistent.share)>
             subPath: grafana
 <endif>
       volumes:
       - name: data
-<if(vars.influxdb.persistent)>
+<if(vars.influxdb.persistent.share)>
         persistentVolumeClaim:
           claimName: <if(vars.influxdb.persistent.storage.pvcName)><vars.influxdb.persistent.storage.pvcName><else>influxdb-persistent-storage<endif>
-<else>
-        emptyDir: {}
 <endif>
-      - name: grafana-persistent-storage
 <if(vars.grafana.persistent)>
         persistentVolumeClaim:
           claimName: grafana-persistent-storage
-<else>
-        emptyDir: {}
 <endif>
       tolerations:
         - key: "CriticalAddonsOnly"
@@ -470,6 +451,7 @@ spec:
         <tolerationMasterEntry(parent, vars, vars.influxGrafana.allowOnMaster)>
         <tolerationEntries(parent, vars, vars.influxGrafana.tolerations)>
       <affinitiesGroup(parent, vars, vars.influxGrafana.affinity)>
+<endif>
 
 ---
 
