@@ -308,7 +308,7 @@ metadata:
   name: rsync-influxdb
   namespace: kube-system
   labels:
-    k8s-app: rsyncInfluxGrafana
+    k8s-app: influxGrafana
     version: <vars.influxGrafana.image.version>
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
@@ -391,7 +391,7 @@ metadata:
   name: rsync-grafana
   namespace: kube-system
   labels:
-    k8s-app: rsyncInfluxGrafana
+    k8s-app: influxGrafana
     version: <vars.influxGrafana.image.version>
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
