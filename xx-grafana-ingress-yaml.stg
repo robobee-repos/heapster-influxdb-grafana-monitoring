@@ -13,8 +13,8 @@ import "robobeerun-templates/_ingress_config.stg"
  * 
  */
 xx-grafana-ingress-yaml(parent, vars) ::= <<
-<if(vars.grafana.hosts)>
 ---
+<if(vars.grafana.hosts)>
 
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -42,13 +42,7 @@ spec:
 
 ---
 
-<ingressService(parent, vars, vars.grafana, "kube-system", "grafana", "monitoring-andrea-muellerpublic-de")>
-
----
-
-<else>
-
-<ingressService(parent, vars, vars.grafana, "kube-system", "grafana", "monitoring-andrea-muellerpublic-de")>
-
 <endif>
+
+<ingressService(parent, vars, vars.grafana, "kube-system", "grafana", "monitoring-andrea-muellerpublic-de")>
 >>
