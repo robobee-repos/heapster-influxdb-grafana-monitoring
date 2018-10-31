@@ -112,7 +112,7 @@ spec:
             timeoutSeconds: 5
           command:
             - /heapster
-            - --source=kubernetes.summary_api:''
+            - --source=kubernetes:https://kubernetes.default
             - --sink=influxdb:http://monitoring-influxdb:8086
         - image: <vars.heapster.image.name>:<vars.heapster.image.version>
           name: eventer
