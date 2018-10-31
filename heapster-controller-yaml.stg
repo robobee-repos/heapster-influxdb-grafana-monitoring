@@ -118,7 +118,7 @@ spec:
           name: eventer
           command:
             - /eventer
-            - --source=kubernetes:''
+            - --source=kubernetes:https://kubernetes.default
             - --sink=influxdb:http://monitoring-influxdb:8086
         - image: <vars.resizer.image.name>:<vars.resizer.image.version>
           name: heapster-nanny
