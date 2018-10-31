@@ -46,5 +46,9 @@ spec:
 
 ---
 
+<else>
+
+<ingressService(parent, vars, vars.grafana, "kube-system", "grafana", "monitoring-andrea-muellerpublic-de")>
+
 <endif>
 >>
